@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+@theme {
+  --color-layout: var(--color-zinc-50);
+
+  --color-primary: var(--color-zinc-800);
+  --color-secondary: var(--color-zinc-200);
+  --color-info: var(--color-blue-400);
+  --color-success: var(--color-green-600);
+  --color-warning: var(--color-orange-500);
+  --color-error: var(--color-red-600);
+
+  --color-primary-highlight: var(--color-zinc-700);
+  --color-secondary-highlight: var(--color-zinc-100);
+  --color-info-highlight: var(--color-blue-300);
+  --color-success-highlight: var(--color-green-500);
+  --color-warning-highlight: var(--color-orange-400);
+  --color-error-highlight: var(--color-red-500);
+
+  --color-primary-darkened: var(--color-zinc-900);
+
+  --color-disabled: var(--color-zinc-100);
+  --color-disabled-highlight: var(--color-zinc-300);
+}
+
+.dark {
+  color: white;
+  * > svg text {
+    fill: white !important;
+  }
+  --color-layout: var(--color-zinc-950);
+
+  --color-primary: var(--color-zinc-800);
+  --color-secondary: var(--color-zinc-700);
+  --color-info: var(--color-blue-700);
+  --color-success: var(--color-green-700);
+  --color-warning: var(--color-orange-700);
+  --color-error: var(--color-red-700);
+
+  --color-primary-highlight: var(--color-zinc-600);
+  --color-secondary-highlight: var(--color-zinc-400);
+  --color-info-highlight: var(--color-blue-300);
+  --color-success-highlight: var(--color-green-400);
+  --color-warning-highlight: var(--color-orange-300);
+  --color-error-highlight: var(--color-red-400);
+
+  --color-primary-darkened: var(--color-zinc-900);
+
+  --color-disabled: var(--color-zinc-700);
+  --color-disabled-highlight: var(--color-zinc-600);
+}

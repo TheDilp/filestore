@@ -17,7 +17,7 @@ type Props = BaseFormComponent & {
 
 const classes = tv({
   slots: {
-    base: "flex h-10 max-h-10 cursor-pointer select-none items-center justify-center gap-2 rounded-md border border-transparent px-4 py-2 font-medium text-white shadow transition-all focus:outline-2 active:scale-95 active:shadow-none",
+    base: "flex h-10 max-h-10 cursor-pointer select-none items-center justify-center gap-2 rounded-md border border-transparent px-4 py-2 font-medium text-white transition-all focus:outline-2 active:scale-95 active:shadow-none",
     labelClasses: "",
     iconClasses: "text-lg dark:text-white",
   },
@@ -50,7 +50,7 @@ const classes = tv({
     },
     isOutline: { true: "bg-transparent text-black", false: "" },
     isDisabled: {
-      true: "bg-disabled active:bg-disabled hover:bg-disabled cursor-not-allowed border border-gray-400 text-gray-300 shadow-none transition-none active:scale-100 active:text-gray-300",
+      true: "bg-disabled active:bg-disabled hover:bg-disabled cursor-not-allowed border border-secondary text-gray-300 shadow-none transition-none active:scale-100 active:text-gray-300",
     },
     hasNoBorder: {
       true: "border-0 shadow-none hover:bg-transparent active:bg-transparent",

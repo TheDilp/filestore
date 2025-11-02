@@ -59,9 +59,9 @@ const classes = tv({
     },
     type: {
       file: {
-        base: "border-primary",
+        base: "border-secondary",
         inputClasses:
-          "file:border-0 file:font-medium pr-4 pl-0 file:py-2.5 file:relative text-sm file:border-r file:border-primary file:text-white file:bg-primary-darkened file:px-2",
+          "file:border-0 file:font-medium pr-4 pl-0 file:py-2.5 file:relative text-sm file:border-r file:border-secondary file:px-2",
       },
       number: {},
       text: {},

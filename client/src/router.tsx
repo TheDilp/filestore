@@ -57,7 +57,7 @@ const rootRoute = createRootRoute({
       !!ctx.context.auth.user?.id &&
       ctx.location.pathname.endsWith("/auth/login")
     )
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/browser" });
   },
   component: () => <Outlet />,
 });
@@ -72,7 +72,7 @@ const indexRoute = createRoute({
     </QueryClientProvider>
   ),
 });
-//#region Auth Routes
+
 const authRoute = createRoute({
   beforeLoad: (ctx) => {
     if (ctx.location.pathname === "/auth")
@@ -107,8 +107,15 @@ const loginRoute = createRoute({
   },
 }).lazy(() => import("./pages/Login").then((d) => d.loginLazyRoute));
 
+const browserRoute = createRoute({
+  getParentRoute: () => indexRoute,
+  path: "/browser",
+}).lazy(() =>
+  import("./pages/FileBrowser").then((d) => d.fileBrowserLazyRoute)
+);
+
 const routeTree = rootRoute.addChildren([
-  indexRoute.addChildren([]),
+  indexRoute.addChildren([browserRoute]),
   authRoute.addChildren([registerRoute, loginRoute]),
 ]);
 

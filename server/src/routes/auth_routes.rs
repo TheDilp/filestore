@@ -97,12 +97,12 @@ async fn login(
     let code_verifier = generate_code_verifier();
     let code_challenge = generate_code_challenge(&code_verifier);
     let state_param = Uuid::new_v4().to_string();
-    let base_fe_url = var("BASE_FE_URL").expect("No ENV var `BASE_FE_URL` set");
+    let client_url = var("CLIENT_URL").expect("No ENV var `CLIENT_URL` set");
     let mut v_conn = state.get_dfly_conn().await?;
 
     let redirect_uri = match state.environment {
         Environment::Development => origin.to_string(),
-        Environment::Production => base_fe_url,
+        Environment::Production => client_url,
         Environment::Unknown => {
             return Err(AppError::critical_error(
                 "UNKNOWN SERVER ENVIRONMENT - AUTH LOGIN ROUTE.",

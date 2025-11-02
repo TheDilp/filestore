@@ -90,7 +90,7 @@ const authRoute = createRoute({
 const registerRoute = createRoute({
   getParentRoute: () => authRoute,
   path: "/register",
-}).lazy(() => import("./pages/routes").then((d) => d.registerLazyRoute));
+}).lazy(() => import("./pages/Register").then((d) => d.registerLazyRoute));
 
 const loginRoute = createRoute({
   getParentRoute: () => authRoute,
@@ -105,10 +105,11 @@ const loginRoute = createRoute({
       if (res.ok && res.data) window.location.replace(res.data.auth_url);
     }
   },
-}).lazy(() => import("./pages/routes").then((d) => d.loginLazyRoute));
+}).lazy(() => import("./pages/Login").then((d) => d.loginLazyRoute));
 
 const routeTree = rootRoute.addChildren([
-  indexRoute.addChildren([authRoute.addChildren([registerRoute, loginRoute])]),
+  indexRoute.addChildren([]),
+  authRoute.addChildren([registerRoute, loginRoute]),
 ]);
 
 export const router = createRouter({ routeTree });

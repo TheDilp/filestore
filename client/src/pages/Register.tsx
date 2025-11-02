@@ -1,10 +1,11 @@
+import { createLazyRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { email, object, string } from "zod";
 
 import { Icon } from "../components";
 import { authFetchFunction, useAppForm } from "../utils";
 
-export function Register() {
+function Register() {
   const [isRegistered, setIsRegistered] = useState(false);
 
   const form = useAppForm({
@@ -172,3 +173,7 @@ export function Register() {
     </div>
   );
 }
+
+export const registerLazyRoute = createLazyRoute("/auth/register")({
+  component: Register,
+});

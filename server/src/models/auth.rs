@@ -1,6 +1,5 @@
-use base64::{Engine, prelude::BASE64_URL_SAFE_NO_PAD};
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
+
 use tokio_postgres::Row;
 use tracing::debug;
 use uuid::Uuid;

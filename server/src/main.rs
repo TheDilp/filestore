@@ -5,6 +5,7 @@ use axum::{
     Router,
     extract::{MatchedPath, Request},
     http::HeaderValue,
+    middleware::from_fn_with_state,
 };
 use axum_extra::extract::cookie::Key;
 
@@ -24,19 +25,18 @@ use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberI
 
 use crate::{
     enums::server_enums::Environment,
-    // middleware::{
-    //     model_middleware::global_model_middleware, permissions_middleware::permissions_middleware,
-    //     session_middleware::session_middleware,
-    // },
+    middleware::session_middleware::session_middleware,
     models::state::AppState,
     routes::{auth_routes::auth_routes, file_routes::file_routes},
     utils::storage_utils::configure_lifecycle_rules,
 };
 mod consts;
 mod enums;
+mod middleware;
 mod models;
 mod routes;
 mod utils;
+
 #[tokio::main]
 async fn main() {
     //* ENV vars
@@ -157,7 +157,9 @@ async fn main() {
         environment,
     };
 
-    let base_router = Router::new().merge(file_routes());
+    let base_router = Router::new()
+        .merge(file_routes())
+        .layer(from_fn_with_state(state.clone(), session_middleware));
 
     let app = Router::new()
         .merge(auth_routes())

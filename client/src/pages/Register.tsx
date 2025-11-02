@@ -1,4 +1,4 @@
-import { createLazyRoute } from "@tanstack/react-router";
+import { createLazyRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { email, object, string } from "zod";
 
@@ -155,6 +155,9 @@ function Register() {
               )}
             />
             <form.AppForm>
+              <Link to="/auth/login" className="w-full text-right">
+                <span className="text-blue-400">Login</span>
+              </Link>
               <form.Subscribe
                 children={(child) => (
                   <form.Button

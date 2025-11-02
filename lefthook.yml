@@ -1,0 +1,14 @@
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      run: scripts/hooks/type_check.sh
+      glob: "*.{ts,tsx}" # glob filter
+    eslint:
+      run: scripts/hooks/lint.sh
+      glob: "*.{ts,tsx}" # glob filter
+
+commit-msg:
+  commands:
+    commit-msg-check:
+      run: bash scripts/hooks/commit_msg.sh {1}

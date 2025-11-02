@@ -237,7 +237,7 @@ async fn verify(
     State(state): State<AppState>,
     query: Query<AuthUserVerifyQuery>,
 ) -> Result<Redirect, AppErrorResponse> {
-    let base_fe_url = var("BASE_FE_URL").expect("No ENV var `BASE_FE_URL` set");
+    let client_url = var("CLIENT_URL").expect("No ENV var `CLIENT_URL` set");
 
     let mut conn = state.get_dfly_conn().await?;
 
@@ -247,7 +247,7 @@ async fn verify(
         .map_err(|err| AppError::dfly_error(err))?;
 
     let redirect_uri = match state.environment {
-        Environment::Development | Environment::Production => base_fe_url,
+        Environment::Development | Environment::Production => client_url,
         Environment::Unknown => {
             return Err(AppError::critical_error(
                 "UNKNOWN SERVER ENVIRONMENT - AUTH LOGIN ROUTE.",

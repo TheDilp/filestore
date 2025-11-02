@@ -80,7 +80,7 @@ export async function fetchFunction<T>({
 
 export async function fetchEnumFunction<T>({ model }: Pick<Props, "model">) {
   const res = await ky<ResponseDataType<T>>(
-    `${import.meta.env.VITE_PROPERTY_MANAGER_SERVER}/api/v1/enums/${model}`,
+    `${import.meta.env.VITE_SERVER_URL}/api/v1/enums/${model}`,
     {
       credentials: "include",
     }

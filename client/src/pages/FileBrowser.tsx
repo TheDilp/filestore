@@ -1,7 +1,7 @@
 import { createLazyRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Button, Input } from "../components";
+import { Button, FileCard, Input } from "../components";
 import { Icons } from "../enums";
 
 function FileBrowser() {
@@ -12,8 +12,8 @@ function FileBrowser() {
       <div className="w-full h-14 flex items-center justify-center">
         <h1 className="text-3xl font-bold">Filestore</h1>
       </div>
-      <div className="container mx-auto flex-1">
-        <div className="rounded-md border border-zinc-300 shadow-xs w-full p-4 flex items-center flex-nowrap gap-x-4">
+      <div className="w-full px-6 flex flex-col gap-y-8 mx-auto flex-1">
+        <div className="rounded-md border border-secondary w-full p-4 flex items-center flex-nowrap gap-x-4">
           <div className="h-10 grow">
             <Input
               isMultiple
@@ -37,6 +37,11 @@ function FileBrowser() {
               icon={Icons.upload}
             />
           </div>
+        </div>
+        <hr className="border-secondary" />
+        <h2 className="text-2xl font-semibold">Your Files</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          <FileCard />
         </div>
       </div>
     </div>

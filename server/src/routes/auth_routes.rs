@@ -17,8 +17,7 @@ use base64::Engine;
 use base64::prelude::BASE64_URL_SAFE_NO_PAD;
 use deadpool_redis::redis::AsyncCommands;
 use headers::Origin;
-use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
+
 use reqwest::StatusCode;
 
 use sha2::{Digest, Sha256};
@@ -70,20 +69,16 @@ async fn register(
         .map_err(|err| AppError::registration_response(err))?
         .to_string();
 
-    let query = "INSERT INTO users (pw_hsh, username, first_name, last_name, is_verified) VALUES ($1, $2, $3, $4, TRUE) RETURNING id";
-    let mut conn = state.get_db_conn().await?;
+    let query = "INSERT INTO users (pw_hsh, username, email, first_name, last_name, is_verified) VALUES ($1, $2, $3, $4, $5, TRUE) RETURNING id";
+    let conn = state.get_db_conn().await?;
 
-    let tx = conn
-        .transaction()
-        .await
-        .map_err(|err| AppError::db_error(err))?;
-
-    let row = tx
+    let row = conn
         .query_one(
             query,
             &[
                 &password_hash,
                 &payload.username,
+                &payload.email,
                 &payload.first_name,
                 &payload.last_name,
             ],
@@ -92,23 +87,6 @@ async fn register(
         .map_err(|err| AppError::db_error(err))?;
 
     let user_id: Uuid = row.get("id");
-
-    tx.execute("INSERT INTO users_contacts (contact_type, value, user_id, is_primary) VALUES ('personal_email', $1, $2, TRUE);", &[&payload.email, &user_id])
-        .await
-        .map_err(|err| AppError::db_error(err))?;
-
-    let mut code: Vec<u8> = vec![];
-    let mut rng = StdRng::from_os_rng();
-    for _ in 0..6 {
-        code.push(rng.random_range(1..=9));
-    }
-    // let code_string = code
-    //     .iter()
-    //     .map(|n| n.to_string())
-    //     .collect::<Vec<String>>()
-    //     .join(" ");
-
-    tx.commit().await.map_err(|err| AppError::db_error(err))?;
 
     Ok(AppResponse::default_response(user_id))
 }

@@ -60,6 +60,7 @@ export default defineConfig([
         { props: "never", children: "never" },
       ],
       "react-hooks/exhaustive-deps": ["off"],
+      "react-refresh/only-export-components": ["off"],
       camelcase: ["error", { allow: ["^relation__", "^RS_"] }],
     },
 

@@ -5,10 +5,10 @@ import type { RequestActionsType, RequestMethodsType } from "../types";
 import type { ResponseDataType } from "../types/BaseResponseTypes";
 
 type Props = {
-  model: typeof Models;
+  model: (typeof Models)[number];
   action: RequestActionsType;
   method: RequestMethodsType;
-  body?: string;
+  body?: string | FormData;
   headers?: Record<string, string>;
   searchParams?: SearchParamsOption;
   retry?: number;
@@ -34,13 +34,7 @@ export async function authFetchFunction<T>({
         credentials: "include",
         throwHttpErrors: false,
         retry: retry ?? 0,
-        headers:
-          headers ||
-          (method === "POST" || method === "PATCH"
-            ? {
-                "Content-Type": "application/json",
-              }
-            : {}),
+        headers,
       }
     );
     return await res.json();
@@ -65,13 +59,7 @@ export async function fetchFunction<T>({
       body,
       credentials: "include",
       searchParams,
-      headers:
-        headers ||
-        (method === "POST" || method === "PATCH"
-          ? {
-              "Content-Type": "application/json",
-            }
-          : {}),
+      headers,
     }
   );
 

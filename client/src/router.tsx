@@ -57,7 +57,7 @@ const rootRoute = createRootRoute({
       !!ctx.context.auth.user?.id &&
       ctx.location.pathname.endsWith("/auth/login")
     )
-      throw redirect({ to: "/browser" });
+      throw redirect({ to: "/browser/{-$path}" });
   },
   component: () => <Outlet />,
 });
@@ -109,7 +109,7 @@ const loginRoute = createRoute({
 
 const browserRoute = createRoute({
   getParentRoute: () => indexRoute,
-  path: "/browser",
+  path: "/browser/{-$path}",
 }).lazy(() =>
   import("./pages/FileBrowser").then((d) => d.fileBrowserLazyRoute)
 );

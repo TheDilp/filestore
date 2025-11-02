@@ -44,7 +44,7 @@ async fn main() {
     let environment = Environment::from_str(&environment_env_var).unwrap_or(Environment::Unknown);
 
     //* Tracing setup
-    let log_level = var("LOG_LEVEL").expect("Env var `LOG_LEVEL` not configured");
+    let log_level = var("LOG_LEVEL").unwrap_or("error".to_owned());
     let filter = EnvFilter::new(log_level);
     tracing_subscriber::registry()
         .with(filter)

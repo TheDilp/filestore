@@ -54,12 +54,6 @@ export default defineConfig([
       "import/no-cycle": "error",
       "no-console": ["error", { allow: ["info", "error"] }],
       camelcase: ["error"],
-      "prettier/prettier": [
-        "error",
-        {
-          endOfLine: "auto",
-        },
-      ],
       curly: ["error", "multi"],
       "react/jsx-curly-brace-presence": [
         "error",

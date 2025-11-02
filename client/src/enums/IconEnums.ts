@@ -11,6 +11,7 @@ export const Icons = {
   tasks: "material-symbols:task-alt-rounded" as const,
   upload: "tabler:upload" as const,
   user: "lucide:user" as const,
+  xlsx: "bi:filetype-xlsx" as const,
 };
 
 export type AvailableIcons = (typeof Icons)[keyof typeof Icons];

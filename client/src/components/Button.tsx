@@ -26,7 +26,7 @@ const classes = tv({
       primary:
         "bg-primary border-primary-darkened hover:bg-primary-highlight active:bg-gray-900",
       secondary:
-        "bg-secondary border-primary hover:bg-secondary-highlight text-white active:bg-gray-600",
+        "bg-secondary border-secondary hover:bg-secondary-highlight text-white active:bg-gray-600",
       info: "bg-info border-info hover:bg-info-highlight active:bg-blue-600",
       success:
         "bg-success border-success hover:bg-success-highlight active:bg-green-600",

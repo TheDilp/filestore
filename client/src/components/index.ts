@@ -4,3 +4,4 @@ export * from "./FileCard";
 export * from "./Icon";
 export * from "./Input";
 export * from "./MainLayout";
+export * from "./Select";

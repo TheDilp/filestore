@@ -70,7 +70,7 @@ async fn register(
         .map_err(|err| AppError::registration_response(err))?
         .to_string();
 
-    let query = "INSERT INTO users (pw_hsh, username, first_name, last_name, is_verified) VALUES ($1, $2, $3, $4, FALSE) RETURNING id";
+    let query = "INSERT INTO users (pw_hsh, username, first_name, last_name, is_verified) VALUES ($1, $2, $3, $4, TRUE) RETURNING id";
     let mut conn = state.get_db_conn().await?;
 
     let tx = conn

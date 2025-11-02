@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 
-import { MainLayout } from "./components";
+import { AuthLayout, MainLayout } from "./components";
 import { LoginSearchParamsSchema } from "./schemas";
 import type { BaseAuthCallbackType } from "./types";
 import { authFetchFunction } from "./utils";
@@ -80,7 +80,11 @@ const authRoute = createRoute({
   },
   getParentRoute: () => rootRoute,
   path: "/auth",
-  component: Outlet,
+  component: () => (
+    <AuthLayout>
+      <Outlet />
+    </AuthLayout>
+  ),
 });
 
 const registerRoute = createRoute({
@@ -104,8 +108,7 @@ const loginRoute = createRoute({
 }).lazy(() => import("./pages/routes").then((d) => d.loginLazyRoute));
 
 const routeTree = rootRoute.addChildren([
-  indexRoute,
-  authRoute.addChildren([registerRoute, loginRoute]),
+  indexRoute.addChildren([authRoute.addChildren([registerRoute, loginRoute])]),
 ]);
 
 export const router = createRouter({ routeTree });

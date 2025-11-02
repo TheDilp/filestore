@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import type { HTMLInputTypeAttribute, KeyboardEventHandler } from "react";
+import type { KeyboardEventHandler } from "react";
 import { tv } from "tailwind-variants";
 
 import { Icons } from "../enums";
@@ -7,15 +7,18 @@ import type { BaseFormComponent, BaseFormEntryComponent } from "../types";
 type Props = BaseFormComponent &
   Omit<BaseFormEntryComponent<string | number>, "onChange"> & {
     placeholder?: string;
-    type?: HTMLInputTypeAttribute;
+    type?: "text" | "number" | "file" | "search" | "password" | "email";
     suffix?: string;
     min?: number;
     max?: number;
     onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
     isAutofocused?: boolean;
+    isMultiple?: boolean;
+    accept?: string;
     onChange: (e: {
       name: string;
       value: string | null;
+      files?: FileList | null;
       valueAsNumber?: number;
     }) => void;
   };
@@ -54,6 +57,19 @@ const classes = tv({
         labelClasses: "text-error group-focus-within:text-error-highlight",
       },
     },
+    type: {
+      file: {
+        base: "border-primary",
+        inputClasses:
+          "file:border-0 file:font-medium pr-4 pl-0 file:py-2.5 file:relative text-sm file:border-r file:border-primary file:text-white file:bg-primary-darkened file:px-2",
+      },
+      number: {},
+      text: {},
+      checkbox: {},
+      email: {},
+      password: {},
+      search: {},
+    },
   },
 });
 
@@ -68,11 +84,16 @@ export function Input({
   variant = "primary",
   errors = [],
   suffix,
+  accept = "image/png, image/jpeg, image/gif",
   isAutofocused,
+  isMultiple,
   min,
   max,
 }: Props) {
-  const { base, container, labelClasses, inputClasses } = classes({ variant });
+  const { base, container, labelClasses, inputClasses } = classes({
+    variant,
+    type,
+  });
   return (
     <div className={container()}>
       {title ? <label className={labelClasses()}>{title}</label> : null}
@@ -85,6 +106,8 @@ export function Input({
           />
         ) : null}
         <input
+          multiple={isMultiple}
+          accept={accept}
           onKeyDown={onKeyDown}
           name={name}
           autoFocus={isAutofocused}
@@ -92,7 +115,9 @@ export function Input({
             onChange({
               name: e?.currentTarget?.name,
               value: e.currentTarget.value,
-              valueAsNumber: e.currentTarget.valueAsNumber,
+              files: type === "file" ? e.currentTarget.files : null,
+              valueAsNumber:
+                type === "number" ? e.currentTarget.valueAsNumber : 0,
             })
           }
           className={inputClasses()}
@@ -100,7 +125,7 @@ export function Input({
           type={type}
           min={min}
           max={max}
-          value={value || ""}
+          value={type === "file" ? undefined : value || ""}
         />
         {suffix ? <span className="mr-2 text-zinc-600">{suffix}</span> : null}
       </div>

@@ -158,6 +158,7 @@ async fn callback(
     State(state): State<AppState>,
     query: axum::extract::Query<CallbackQuery>,
 ) -> Result<(PrivateCookieJar, AppResponse<AuthSession>), AppErrorResponse> {
+    let domain = var("DOMAIN").expect("Env var `DOMAIN` not set");
     let mut dfly_conn = state.get_dfly_conn().await?;
     let code_verifier: Option<String> = dfly_conn
         .get(&query.state)
@@ -193,7 +194,7 @@ async fn callback(
         cookie.set_http_only(true);
         cookie.set_max_age(Some(time::Duration::seconds(AUTH_SESSION_TIME.into())));
         if state.environment == Environment::Production {
-            cookie.set_domain("thearkive.app");
+            cookie.set_domain(domain);
         }
         cookie.set_path("/");
         let auth_session = state.get_session_data(&session_id).await;

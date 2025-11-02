@@ -29,7 +29,7 @@ use crate::{
     //     session_middleware::session_middleware,
     // },
     models::state::AppState,
-    routes::auth_routes::auth_routes,
+    routes::{auth_routes::auth_routes, file_routes::file_routes},
     utils::storage_utils::configure_lifecycle_rules,
 };
 mod consts;
@@ -157,11 +157,11 @@ async fn main() {
         environment,
     };
 
-    // * Middleware config
+    let base_router = Router::new().merge(file_routes());
 
     let app = Router::new()
         .merge(auth_routes())
-        // .nest("/api/v1", base_router)
+        .nest("/api/v1", base_router)
         .with_state(state)
         .layer(
             TraceLayer::new_for_http().make_span_with(|request: &Request<_>| {

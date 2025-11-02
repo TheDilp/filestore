@@ -34,7 +34,13 @@ export async function authFetchFunction<T>({
         credentials: "include",
         throwHttpErrors: false,
         retry: retry ?? 0,
-        headers,
+        headers:
+          typeof body === "string"
+            ? {
+                ...(headers || {}),
+                "Content-Type": "application/json",
+              }
+            : headers,
       }
     );
     return await res.json();
@@ -59,7 +65,13 @@ export async function fetchFunction<T>({
       body,
       credentials: "include",
       searchParams,
-      headers,
+      headers:
+        typeof body === "string"
+          ? {
+              ...(headers || {}),
+              "Content-Type": "application/json",
+            }
+          : headers,
     }
   );
 

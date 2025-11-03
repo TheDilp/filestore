@@ -12,7 +12,7 @@ export const Icons = {
   csv: "bi:filetype-csv",
   dashboard: "clarity:dashboard-line" as const,
   expand: "ci:expand" as const,
-  grid: "mdi-light:grid" as const,
+  grid: "cuida:grid-outline" as const,
   doc: "bi:filetype-docx" as const,
   docx: "bi:filetype-docx" as const,
   exe: "bi:filetype-exe",

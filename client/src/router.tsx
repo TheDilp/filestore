@@ -55,7 +55,8 @@ const rootRoute = createRootRoute({
       throw redirect({ to: "/auth/login" });
     if (
       !!ctx.context.auth.user?.id &&
-      ctx.location.pathname.endsWith("/auth/login")
+      (ctx.location.pathname.endsWith("/auth/login") ||
+        ctx.location.href === "/")
     )
       throw redirect({ to: "/browser/{-$path}" });
   },
@@ -63,6 +64,19 @@ const rootRoute = createRootRoute({
 });
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
+  loader: (ctx) => {
+    if (
+      !ctx.context.auth.user &&
+      !ctx.location.pathname.endsWith("/auth/login") &&
+      !ctx.location.pathname.endsWith("/auth/register")
+    )
+      throw redirect({ to: "/auth/login" });
+    if (
+      !!ctx.context.auth.user?.id &&
+      ctx.location.pathname.endsWith("/auth/login")
+    )
+      throw redirect({ to: "/browser/{-$path}" });
+  },
   path: "/",
   component: () => (
     <QueryClientProvider client={queryClient}>

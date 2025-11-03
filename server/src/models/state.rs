@@ -66,8 +66,7 @@ impl AppState {
             .query_opt(
                 "SELECT
                     users.id, users.username, users.first_name,
-                    users.last_name, users.image_id, users.pw_hsh,
-                    users.is_verified
+                    users.last_name, users.pw_hsh, users.is_verified
                 FROM
                     users
                 WHERE

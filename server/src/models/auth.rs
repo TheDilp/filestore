@@ -55,7 +55,6 @@ pub struct AuthUser {
     pub username: String,
     pub first_name: String,
     pub last_name: String,
-    pub image_id: Option<Uuid>,
     // pub settings: Option<Value>,
 }
 
@@ -66,14 +65,12 @@ impl AuthUser {
         let username: String = row.get("username");
         let first_name: String = row.get("first_name");
         let last_name: String = row.get("last_name");
-        let image_id: Option<Uuid> = row.get("image_id");
 
         Self {
             id,
             username,
             first_name,
             last_name,
-            image_id,
         }
     }
 }

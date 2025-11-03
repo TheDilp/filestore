@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import type { KeyboardEventHandler } from "react";
+import type { KeyboardEventHandler, RefObject } from "react";
 import { tv } from "tailwind-variants";
 
 import { Icons } from "../enums";
@@ -15,6 +15,7 @@ type Props = BaseFormComponent &
     isAutofocused?: boolean;
     isMultiple?: boolean;
     accept?: string;
+    ref?: RefObject<HTMLInputElement | null>;
     onChange: (e: {
       name: string;
       value: string | null;
@@ -89,6 +90,7 @@ export function Input({
   isMultiple,
   min,
   max,
+  ref,
 }: Props) {
   const { base, container, labelClasses, inputClasses } = classes({
     variant,
@@ -106,6 +108,7 @@ export function Input({
           />
         ) : null}
         <input
+          ref={ref}
           multiple={isMultiple}
           accept={accept}
           onKeyDown={onKeyDown}

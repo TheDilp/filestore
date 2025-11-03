@@ -29,6 +29,7 @@ export const Icons = {
   key: "bi:filetype-key" as const,
   list: "lucide:list" as const,
   m4p: "bi:filetype-m4p" as const,
+  menu: "heroicons:ellipsis-horizontal" as const,
   md: "bi:filetype-md" as const,
   mdx: "bi:filetype-mdx" as const,
   mov: "bi:filetype-mov" as const,

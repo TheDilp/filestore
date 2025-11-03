@@ -21,6 +21,8 @@
 
   --color-disabled: var(--color-zinc-100);
   --color-disabled-highlight: var(--color-zinc-300);
+
+  --fade-in-transition: width, opacity;
 }
 
 .dark {

@@ -1,7 +1,10 @@
 use aws_sdk_s3::primitives::ByteStream;
 use axum::extract::multipart::Field;
 
-use crate::{enums::file_enums::FileTypes, models::state::AppState};
+use crate::{
+    enums::{errors::AppError, file_enums::FileTypes},
+    models::state::AppState,
+};
 
 pub async fn upload_file(
     state: &AppState,
@@ -10,9 +13,17 @@ pub async fn upload_file(
 ) -> Result<(String, FileTypes, i64), bool> {
     let mut size: i64 = 0;
     let mut stream = field;
-    while let Some(chunk) = stream.chunk().await.unwrap() {
+    while let Some(chunk) = stream.chunk().await.map_err(|err| {
+        AppError::critical_error(format!(
+            "CANNOT READ FILE CHUNK | STATUS:{} | TEXT:{}",
+            err.status(),
+            err.body_text()
+        ));
+        false
+    })? {
         size += chunk.len() as i64;
     }
+
     let content_type = stream.content_type();
     let name = stream.name().unwrap_or("unnamed").to_string();
     if name == "unnamed" {

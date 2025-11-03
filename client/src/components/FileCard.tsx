@@ -20,7 +20,7 @@ export function FileCard({ title, type, createdAt, size }: Props) {
             <Icon icon={Icons[type]} fontSize={32} />
           </div>
         </div>
-        <div className="group-hover:w-8 group-hover:opacity-100 pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
+        <div className="group-hover:w-8 group-hover:opacity-100 max-sm:opacity-100 max-sm:w-8 pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
           <Button onClick={undefined} hasNoBorder isOutline icon={Icons.menu} />
         </div>
       </div>

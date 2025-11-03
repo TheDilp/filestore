@@ -88,6 +88,7 @@ async fn upload_file_route(
         }
     }
 
+    tx.commit().await.map_err(|err| AppError::db_error(err))?;
     Ok(AppResponse::default_response(vec![]))
 }
 
@@ -148,12 +149,12 @@ async fn list_files(
     let stmt = "
     SELECT id, title, type, size
     FROM files 
-    WHERE path LIKE '%$1'
+    WHERE path LIKE $1
     LIMIT 25
     OFFSET 0;";
 
     let rows = conn
-        .query(stmt, &[&query.path])
+        .query(stmt, &[&format!("%{}", query.path)])
         .await
         .map_err(|err| AppError::db_error(err))?;
 

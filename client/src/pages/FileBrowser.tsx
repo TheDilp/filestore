@@ -113,9 +113,14 @@ function FileBrowser() {
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {data.map((item) => (
-            <FileCard key={item.id} />
+            <FileCard
+              key={item.id}
+              title={item.title}
+              createdAt={item.createdAt}
+              type={item.type}
+              size={item.size}
+            />
           ))}
-          <FileCard />
         </div>
       </div>
     </div>

@@ -35,8 +35,8 @@ mod enums;
 mod middleware;
 mod models;
 mod routes;
+mod traits;
 mod utils;
-
 #[tokio::main]
 async fn main() {
     //* ENV vars

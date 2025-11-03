@@ -9,6 +9,7 @@ use axum::{
 use reqwest::header::{CONTENT_DISPOSITION, CONTENT_TYPE};
 
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use uuid::Uuid;
 
 use crate::{
@@ -19,6 +20,7 @@ use crate::{
         response::{AppErrorResponse, AppResponse, RouteResponse},
         state::AppState,
     },
+    traits::db_traits::SerializeList,
     utils::file_utils::upload_file,
 };
 
@@ -40,7 +42,7 @@ async fn upload_file_route(
         .map_err(|err| AppError::db_error(err))?;
 
     let statement = tx
-        .prepare("INSERT INTO files (id, title, owner_id, size, type) VALUES ($1, $2, $3, $4, $5);")
+        .prepare("INSERT INTO files (id, title, owner_id, size, type, path) VALUES ($1, $2, $3, $4, $5, $6);")
         .await
         .map_err(|err| AppError::db_error(err))?;
 
@@ -63,6 +65,7 @@ async fn upload_file_route(
                         &session.user.id,
                         &size,
                         &file_type.to_string(),
+                        &query.path,
                     ],
                 )
                 .await;
@@ -96,12 +99,9 @@ async fn download_file(
     let conn = state.get_db_conn().await?;
 
     let row = conn
-        .query_one(
-            "SELECT id, title, type, category FROM files WHERE id = $1;",
-            &[&id],
-        )
+        .query_one("SELECT id, title, type FROM files WHERE id = $1;", &[&id])
         .await
-        .map_err(AppError::critical_error)?;
+        .map_err(|err| AppError::db_error(err))?;
 
     let id: Uuid = row.get("id");
     let title: String = row.get("title");
@@ -139,9 +139,31 @@ async fn download_file(
     Ok(response)
 }
 
+async fn list_files(
+    State(state): State<AppState>,
+    Query(query): Query<FileQuery>,
+) -> RouteResponse<Value> {
+    let conn = state.get_db_conn().await?;
+
+    let stmt = "
+    SELECT id, title, type, size
+    FROM files 
+    WHERE path LIKE '%$1'
+    LIMIT 25
+    OFFSET 0;";
+
+    let rows = conn
+        .query(stmt, &[&query.path])
+        .await
+        .map_err(|err| AppError::db_error(err))?;
+
+    Ok(AppResponse::default_response(rows.serialize_list()))
+}
+
 async fn delete_file(
     Extension(session): Extension<AuthSession>,
     State(state): State<AppState>,
+    Query(query): Query<FileQuery>,
     Path(id): Path<Uuid>,
 ) -> RouteResponse<Uuid> {
     let mut conn = state.get_db_conn().await?;
@@ -150,13 +172,6 @@ async fn delete_file(
         .await
         .map_err(|err| AppError::db_error(err))?;
 
-    let existing_row = tx
-        .query_one("SELECT category FROM files WHERE id = $1;", &[&id])
-        .await
-        .map_err(|err| AppError::db_error(err))?;
-
-    let category: String = existing_row.get("category");
-
     tx.execute(
         "DELETE FROM files WHERE id = $1 AND owner_id = $2;",
         &[&id, &session.user.id],
@@ -164,7 +179,7 @@ async fn delete_file(
     .await
     .map_err(|err| AppError::db_error(err))?;
 
-    let key = format!("{}/{}", category, id);
+    let key = format!("{}/{}", query.path, id);
     state
         .s3_client
         .delete_object()
@@ -186,6 +201,7 @@ pub fn file_routes() -> Router<AppState> {
             Router::new()
                 .route("/upload", post(upload_file_route))
                 .route("/download/{id}", get(download_file))
+                .route("/list", get(list_files))
                 .route("/{id}", delete(delete_file)),
         )
         .layer(DefaultBodyLimit::max(MAX_FILE_SIZE))

@@ -1,10 +1,12 @@
 import { createLazyRoute, useParams } from "@tanstack/react-router";
 import { useState } from "react";
+import type { infer as zodInfer } from "zod";
 
 import { Button, FileCard, Input, Select } from "../components";
 import { Icons } from "../enums";
+import { useList } from "../hooks";
+import { FileSchema } from "../schemas";
 import { fetchFunction } from "../utils";
-
 const sortOptions = [
   { id: "size", label: "Size", value: "size" },
   { id: "title", label: "Title", value: "title" },
@@ -16,6 +18,17 @@ function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
   const [view, setView] = useState<"grid" | "list">("grid");
   const params = useParams({ from: "/browser/{-$path}" });
+
+  const { data = [] } = useList<zodInfer<typeof FileSchema>>(
+    {
+      model: "files",
+      fields: ["id", "title"],
+    },
+    {
+      searchParams: [["path", params.path || "/"]],
+    }
+  );
+
   return (
     <div className="w-full mx-auto h-full flex flex-col gap-y-4">
       <div className="w-full h-14 flex items-center justify-center">
@@ -40,14 +53,14 @@ function FileBrowser() {
               iconSize={16}
               iconPosition="left"
               isDisabled={!files?.length}
-              onClick={() => {
+              onClick={async () => {
                 if (!files) return;
                 const formData = new FormData();
 
                 for (let index = 0; index < files.length; index++)
                   formData.append(files[index].name, files[index]);
 
-                fetchFunction({
+                const res = await fetchFunction({
                   model: "files",
                   action: "upload",
                   body: formData,
@@ -56,6 +69,7 @@ function FileBrowser() {
                     ["path", params?.path || "/"],
                   ]),
                 });
+                if (res.ok) window.location.reload();
               }}
               title="Upload"
               variant="primary"
@@ -97,7 +111,10 @@ function FileBrowser() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {data.map((item) => (
+            <FileCard key={item.id} />
+          ))}
           <FileCard />
         </div>
       </div>

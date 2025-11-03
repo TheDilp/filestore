@@ -1,5 +1,5 @@
 import { createLazyRoute, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
 import { Button, FileCard, Input, Select } from "../components";
@@ -18,6 +18,8 @@ function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
   const [view, setView] = useState<"grid" | "list">("grid");
   const params = useParams({ from: "/browser/{-$path}" });
+
+  const ref = useRef<HTMLInputElement>(null);
 
   const { data = [] } = useList<zodInfer<typeof FileSchema>>(
     {
@@ -38,6 +40,7 @@ function FileBrowser() {
         <div className="rounded-md border border-secondary w-full p-4 flex items-center flex-nowrap gap-x-4">
           <div className="h-10 grow">
             <Input
+              ref={ref}
               isMultiple
               accept="image/*, audio/*, video/*"
               onChange={(e) => {
@@ -58,7 +61,7 @@ function FileBrowser() {
                 const formData = new FormData();
 
                 for (let index = 0; index < files.length; index++)
-                  formData.append(files[index].name, files[index]);
+                  formData.append(`file${index}`, files[index]);
 
                 const res = await fetchFunction({
                   model: "files",
@@ -69,7 +72,7 @@ function FileBrowser() {
                     ["path", params?.path || "/"],
                   ]),
                 });
-                if (res.ok) window.location.reload();
+                if (res.ok && ref.current) ref.current.value = "";
               }}
               title="Upload"
               variant="primary"

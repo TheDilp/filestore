@@ -21,7 +21,7 @@ function FileBrowser() {
 
   const ref = useRef<HTMLInputElement>(null);
 
-  const { data = [] } = useList<zodInfer<typeof FileSchema>>(
+  const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>(
     {
       model: "files",
       fields: ["id", "title"],
@@ -36,7 +36,7 @@ function FileBrowser() {
     const formData = new FormData();
 
     for (let index = 0; index < files.length; index++)
-      formData.append(`file${index}`, files[index]);
+      formData.append(`file${index}`, files[index], files[index].name);
 
     const res = await fetchFunction({
       model: "files",
@@ -45,7 +45,10 @@ function FileBrowser() {
       method: "POST",
       searchParams: new URLSearchParams([["path", params?.path || "/"]]),
     });
-    if (res.ok && ref.current) ref.current.value = "";
+    if (res.ok && ref.current) {
+      ref.current.value = "";
+      refetch();
+    }
   }
 
   return (

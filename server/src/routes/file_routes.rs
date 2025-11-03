@@ -108,7 +108,10 @@ async fn download_file(
     let conn = state.get_db_conn().await?;
 
     let row = conn
-        .query_one("SELECT id, title, type FROM files WHERE id = $1;", &[&id])
+        .query_one(
+            "SELECT id, created_at, title, type FROM files WHERE id = $1;",
+            &[&id],
+        )
         .await
         .map_err(|err| AppError::db_error(err))?;
 

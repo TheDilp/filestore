@@ -25,7 +25,7 @@ pub async fn upload_file(
     }
 
     let content_type = stream.content_type();
-    let name = stream.name().unwrap_or("unnamed").to_string();
+    let name = stream.file_name().unwrap_or("unnamed").to_string();
     if name == "unnamed" {
         tracing::error!("Unnamed file SKIPPING - {}", file_path);
         return Err(false);

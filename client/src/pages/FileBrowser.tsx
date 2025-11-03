@@ -1,8 +1,9 @@
-import { createLazyRoute } from "@tanstack/react-router";
+import { createLazyRoute, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { Button, FileCard, Input, Select } from "../components";
 import { Icons } from "../enums";
+import { fetchFunction } from "../utils";
 
 const sortOptions = [
   { id: "size", label: "Size", value: "size" },
@@ -14,7 +15,7 @@ const sortOptions = [
 function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
   const [view, setView] = useState<"grid" | "list">("grid");
-
+  const params = useParams({ from: "/browser/{-$path}" });
   return (
     <div className="w-full mx-auto h-full flex flex-col gap-y-4">
       <div className="w-full h-14 flex items-center justify-center">
@@ -25,7 +26,7 @@ function FileBrowser() {
           <div className="h-10 grow">
             <Input
               isMultiple
-              accept="image/png, image/jpeg, image/gif, image/webp"
+              accept="image/*, audio/*, video/*"
               onChange={(e) => {
                 if (e.files) setFiles(e.files);
               }}
@@ -39,7 +40,23 @@ function FileBrowser() {
               iconSize={16}
               iconPosition="left"
               isDisabled={!files?.length}
-              onClick={undefined}
+              onClick={() => {
+                if (!files) return;
+                const formData = new FormData();
+
+                for (let index = 0; index < files.length; index++)
+                  formData.append(files[index].name, files[index]);
+
+                fetchFunction({
+                  model: "files",
+                  action: "upload",
+                  body: formData,
+                  method: "POST",
+                  searchParams: new URLSearchParams([
+                    ["path", params?.path || "/"],
+                  ]),
+                });
+              }}
               title="Upload"
               variant="primary"
               icon={Icons.upload}
@@ -88,6 +105,6 @@ function FileBrowser() {
   );
 }
 
-export const fileBrowserLazyRoute = createLazyRoute("/browser")({
+export const fileBrowserLazyRoute = createLazyRoute("/browser/{-$path}")({
   component: FileBrowser,
 });

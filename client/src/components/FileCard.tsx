@@ -14,13 +14,13 @@ export function FileCard({ title, type, createdAt, size }: Props) {
   return (
     <div className="border border-secondary p-4 rounded-md hover:shadow transition-shadow group">
       <div className="flex flex-row items-center justify-between h-10">
-        <div className="flex flex-no-wrap flex-1 justify-between items-center gap-x-4 ">
-          <h3 className="text-sm font-medium truncate">{title}</h3>
+        <div className="flex flex-1 flex-no-wrap max-lg:max-w-5/6 justify-between w-full items-center gap-x-4">
+          <h3 className="text-sm font-medium truncate  w-full">{title}</h3>
           <div>
             <Icon icon={Icons[type]} fontSize={32} />
           </div>
         </div>
-        <div className="group-hover:w-8 group-hover:opacity-100 max-sm:opacity-100 max-sm:w-8 pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
+        <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
           <Button onClick={undefined} hasNoBorder isOutline icon={Icons.menu} />
         </div>
       </div>

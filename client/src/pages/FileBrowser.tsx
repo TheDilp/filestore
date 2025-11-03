@@ -52,11 +52,11 @@ function FileBrowser() {
   }
 
   return (
-    <div className="w-full mx-auto h-full flex flex-col gap-y-4">
+    <div className="w-full mx-auto h-full flex flex-col gap-y-4 overflow-hidden">
       <div className="w-full h-14 flex items-center justify-center">
         <h1 className="text-3xl font-bold">Filestore</h1>
       </div>
-      <div className="w-full px-6 flex flex-col gap-y-10 mx-auto flex-1">
+      <div className="w-full px-6 flex flex-col gap-y-10 mx-auto flex-1 max-h-[calc(100%-120px)]">
         <div className="rounded-md border border-secondary w-full p-4 flex items-center flex-nowrap gap-x-4">
           <div className="h-10 grow">
             <Input
@@ -84,8 +84,8 @@ function FileBrowser() {
           </div>
         </div>
         <hr className="border-secondary" />
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Your Files</h2>
+        <div className="flex items-center justify-between max-sm:gap-y-8 max-sm:flex-col">
+          <h2 className="text-2xl font-semibold max-sm:hidden">Your Files</h2>
           <div className="flex items-center gap-x-2">
             <div className="w-46">
               <Select
@@ -117,7 +117,7 @@ function FileBrowser() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto overflow-x-hidden grow">
           {data.map((item) => (
             <FileCard
               key={item.id}

@@ -40,7 +40,7 @@ async fn upload_file_route(
         .map_err(|err| AppError::db_error(err))?;
 
     let statement = tx
-        .prepare("INSERT INTO images (id, title, owner_id, size) VALUES ($1, $2, $3, $4);")
+        .prepare("INSERT INTO files (id, title, owner_id, size, type) VALUES ($1, $2, $3, $4, $5);")
         .await
         .map_err(|err| AppError::db_error(err))?;
 
@@ -53,11 +53,35 @@ async fn upload_file_route(
         let file_path = format!("{}/{}", &query.path, &file_id);
 
         let upload_result = upload_file(&state, field, &file_path).await;
-
-        if let Ok((name, _)) = upload_result {
-            let _ = tx
-                .execute(&statement, &[&file_id, &name, &session.user.id])
+        if let Ok((title, file_type, size)) = upload_result {
+            let db_result = tx
+                .execute(
+                    &statement,
+                    &[
+                        &file_id,
+                        &title,
+                        &session.user.id,
+                        &size,
+                        &file_type.to_string(),
+                    ],
+                )
                 .await;
+
+            if db_result.is_err() {
+                AppError::db_error(db_result.err().unwrap());
+
+                let upload = state
+                    .s3_client
+                    .delete_object()
+                    .bucket(&state.s3_name)
+                    .key(file_path)
+                    .send()
+                    .await
+                    .map_err(|err| AppError::s3_error(err));
+                if upload.is_err() {
+                    continue;
+                }
+            }
         }
     }
 

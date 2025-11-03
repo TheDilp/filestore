@@ -7,15 +7,21 @@ pub async fn upload_file(
     state: &AppState,
     field: Field<'_>,
     file_path: &String,
-) -> Result<(String, FileTypes), bool> {
-    let content_type = field.content_type();
-    let name = field.name().unwrap_or("unnamed").to_string();
+) -> Result<(String, FileTypes, i64), bool> {
+    let mut size: i64 = 0;
+    let mut stream = field;
+    while let Some(chunk) = stream.chunk().await.unwrap() {
+        size += chunk.len() as i64;
+    }
+    let content_type = stream.content_type();
+    let name = stream.name().unwrap_or("unnamed").to_string();
     if name == "unnamed" {
         tracing::error!("Unnamed file SKIPPING - {}", file_path);
         return Err(false);
     }
+
     let content_type = content_type.unwrap().to_string();
-    let data = field.bytes().await;
+    let data = stream.bytes().await;
     if data.is_err() {
         tracing::error!("ERROR GETTING FILE DATA - {}", data.err().unwrap());
         return Err(false);
@@ -37,7 +43,7 @@ pub async fn upload_file(
         .await;
 
     if upload.is_ok() {
-        Ok((name, FileTypes::from(content_type)))
+        Ok((name, FileTypes::from(content_type), size))
     } else {
         tracing::error!("ERROR UPLOADING FILE - {}", upload.err().unwrap());
         Err(false)

@@ -31,6 +31,23 @@ function FileBrowser() {
     }
   );
 
+  async function uploadFiles() {
+    if (!files) return;
+    const formData = new FormData();
+
+    for (let index = 0; index < files.length; index++)
+      formData.append(`file${index}`, files[index]);
+
+    const res = await fetchFunction({
+      model: "files",
+      action: "upload",
+      body: formData,
+      method: "POST",
+      searchParams: new URLSearchParams([["path", params?.path || "/"]]),
+    });
+    if (res.ok && ref.current) ref.current.value = "";
+  }
+
   return (
     <div className="w-full mx-auto h-full flex flex-col gap-y-4">
       <div className="w-full h-14 flex items-center justify-center">
@@ -56,24 +73,7 @@ function FileBrowser() {
               iconSize={16}
               iconPosition="left"
               isDisabled={!files?.length}
-              onClick={async () => {
-                if (!files) return;
-                const formData = new FormData();
-
-                for (let index = 0; index < files.length; index++)
-                  formData.append(`file${index}`, files[index]);
-
-                const res = await fetchFunction({
-                  model: "files",
-                  action: "upload",
-                  body: formData,
-                  method: "POST",
-                  searchParams: new URLSearchParams([
-                    ["path", params?.path || "/"],
-                  ]),
-                });
-                if (res.ok && ref.current) ref.current.value = "";
-              }}
+              onClick={uploadFiles}
               title="Upload"
               variant="primary"
               icon={Icons.upload}

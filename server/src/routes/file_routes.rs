@@ -10,6 +10,7 @@ use reqwest::header::{CONTENT_DISPOSITION, CONTENT_TYPE};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use tracing::debug;
 use uuid::Uuid;
 
 use crate::{
@@ -46,15 +47,20 @@ async fn upload_file_route(
         .await
         .map_err(|err| AppError::db_error(err))?;
 
+    debug!("WHILE LOOP FOR FIELDS");
     while let Some(field) = payload
         .next_field()
         .await
         .map_err(|err| AppError::default_response(err))?
     {
+        debug!("ENTERED WHILE LOOP FOR FIELDS");
+
         let file_id = Uuid::new_v4();
         let file_path = format!("{}/{}", &query.path, &file_id);
 
+        debug!("BEGIN FILE UPLOAD");
         let upload_result = upload_file(&state, field, &file_path).await;
+        debug!("END FILE UPLOAD");
         if let Ok((title, file_type, size)) = upload_result {
             let db_result = tx
                 .execute(
@@ -85,6 +91,8 @@ async fn upload_file_route(
                     continue;
                 }
             }
+        } else {
+            continue;
         }
     }
 
@@ -205,5 +213,5 @@ pub fn file_routes() -> Router<AppState> {
                 .route("/list", get(list_files))
                 .route("/{id}", delete(delete_file)),
         )
-        .layer(DefaultBodyLimit::max(MAX_FILE_SIZE))
+        .layer(DefaultBodyLimit::max(*MAX_FILE_SIZE))
 }

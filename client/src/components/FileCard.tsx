@@ -4,6 +4,7 @@ import { Icons } from "../enums";
 import type { FileSchema } from "../schemas";
 import { formatDateTime, getFileSize, getIconColor } from "../utils";
 import { Button } from "./Button";
+import { Dropdown } from "./Dropdown";
 import { Icon } from "./Icon";
 
 type Props = Pick<
@@ -22,7 +23,23 @@ export function FileCard({ title, type, createdAt, size }: Props) {
           </div>
         </div>
         <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
-          <Button onClick={undefined} hasNoBorder isOutline icon={Icons.menu} />
+          <Dropdown
+            items={[
+              {
+                id: "download",
+                title: "Download",
+                icon: Icons.download,
+                onClick: () => {},
+              },
+            ]}
+          >
+            <Button
+              onClick={undefined}
+              hasNoBorder
+              isOutline
+              icon={Icons.menu}
+            />
+          </Dropdown>
         </div>
       </div>
       <div className="text-xs flex flex-col gap-y-0.5 text-zinc-400">

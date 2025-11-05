@@ -158,7 +158,7 @@ async fn list_files(
     let conn = state.get_db_conn().await?;
 
     let stmt = "
-    SELECT id, title, type, size
+    SELECT id, created_at, title, type, size
     FROM files 
     WHERE path LIKE $1
     LIMIT 25

@@ -1,3 +1,7 @@
+import type { infer as zodInfer } from "zod";
+
+import type { FileSchema } from "../schemas";
+
 export function sentenceCase(field: string): string {
   const text =
     field?.replaceAll(/[_-]/g, " ")?.replace(/([A-Z])/g, " $1") || "";
@@ -35,4 +39,81 @@ export function getFileSize(size: number): string {
   if (size < 1_000_000_000_000_000)
     return `${(size / 1_000_000_000_000).toFixed(2)} TB`;
   return `${size} bytes`;
+}
+
+export function getIconColor(type: zodInfer<typeof FileSchema>["type"]) {
+  switch (type) {
+    case "doc":
+    case "docx":
+    case "txt":
+    case "pdf":
+    case "md":
+    case "mdx":
+      return "#2B579A";
+
+    case "xls":
+    case "xlsx":
+    case "csv":
+    case "json":
+    case "xml":
+    case "yml":
+    case "sql":
+      return "#1E7145";
+
+    case "png":
+    case "jpg":
+    case "jpeg":
+    case "bmp":
+    case "gif":
+    case "webp":
+    case "svg":
+    case "heic":
+    case "raw":
+    case "tiff":
+    case "psd":
+      return "#E67E22";
+
+    case "mp3":
+    case "wav":
+    case "ogg":
+    case "aac":
+    case "m4p":
+      return "#9C27B0";
+
+    case "mp4":
+    case "mov":
+    case "avi":
+    case "webm":
+      return "#0097A7";
+
+    case "js":
+    case "jsx":
+    case "tsx":
+    case "css":
+    case "scss":
+    case "sass":
+    case "py":
+    case "rb":
+    case "php":
+    case "sh":
+    case "java":
+    case "cs":
+    case "html":
+      return "#FDD835";
+
+    case "ttf":
+    case "otf":
+    case "woff":
+      return "#8D6E63";
+
+    case "zip":
+    case "rar":
+      return "#607D8B";
+
+    case "exe":
+      return "#C62828";
+
+    default:
+      return "#9E9E9E";
+  }
 }

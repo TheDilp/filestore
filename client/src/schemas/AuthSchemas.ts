@@ -7,7 +7,6 @@ export const LoginSchema = object({
   username: string(),
   firstName: string(),
   lastName: string(),
-  imageId: uuidv4().nullable(),
 });
 
 export const LoginSearchParamsSchema = object({

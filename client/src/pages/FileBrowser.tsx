@@ -130,7 +130,7 @@ function FileBrowser() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col divide-y divide-secondary">
+          <div className="flex flex-col divide-y divide-secondary overflow-y-auto">
             {data.map((item) => (
               <FileRow
                 key={item.id}

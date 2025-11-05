@@ -2,7 +2,7 @@ import type { infer as zodInfer } from "zod";
 
 import { Icons } from "../enums";
 import type { FileSchema } from "../schemas";
-import { getFileSize, getIconColor } from "../utils";
+import { formatDateTime, getFileSize, getIconColor } from "../utils";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
 
@@ -27,7 +27,7 @@ export function FileCard({ title, type, createdAt, size }: Props) {
       </div>
       <div className="text-xs flex flex-col gap-y-0.5 text-zinc-400">
         <span>Size: {getFileSize(size)}</span>
-        <span>Uploaded: {createdAt}</span>
+        <span>Uploaded: {formatDateTime(createdAt)}</span>
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ const sortOptions = [
 
 function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
-  const [view, setView] = useState<"grid" | "list">("list");
+  const [view, setView] = useState<"grid" | "list">("grid");
   const params = useParams({ from: "/browser/{-$path}" });
 
   const ref = useRef<HTMLInputElement>(null);
@@ -118,7 +118,7 @@ function FileBrowser() {
           </div>
         </div>
         {view === "grid" ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto overflow-x-hidden grow">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto overflow-x-hidden grow content-start">
             {data.map((item) => (
               <FileCard
                 key={item.id}

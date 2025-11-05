@@ -2,7 +2,7 @@ import { createLazyRoute, useParams } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
-import { Button, FileCard, Input, Select } from "../components";
+import { Button, FileCard, FileRow, Input, Select } from "../components";
 import { Icons } from "../enums";
 import { useList } from "../hooks";
 import { FileSchema } from "../schemas";
@@ -16,7 +16,7 @@ const sortOptions = [
 
 function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const [view, setView] = useState<"grid" | "list">("list");
   const params = useParams({ from: "/browser/{-$path}" });
 
   const ref = useRef<HTMLInputElement>(null);
@@ -117,17 +117,31 @@ function FileBrowser() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto overflow-x-hidden grow">
-          {data.map((item) => (
-            <FileCard
-              key={item.id}
-              title={item.title}
-              createdAt={item.createdAt}
-              type={item.type}
-              size={item.size}
-            />
-          ))}
-        </div>
+        {view === "grid" ? (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto overflow-x-hidden grow">
+            {data.map((item) => (
+              <FileCard
+                key={item.id}
+                title={item.title}
+                createdAt={item.createdAt}
+                type={item.type}
+                size={item.size}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col divide-y divide-secondary">
+            {data.map((item) => (
+              <FileRow
+                key={item.id}
+                title={item.title}
+                createdAt={item.createdAt}
+                type={item.type}
+                size={item.size}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -26,3 +26,13 @@ export function snakecase(text: string): string {
     .replace(/[\s-]+/g, "_")
     .toLowerCase();
 }
+
+export function getFileSize(size: number): string {
+  if (size < 1000) return `${size} bytes`;
+  if (size < 1_000_000_000) return `${(size / 1_000_000).toFixed(2)} MB`;
+  if (size < 1_000_000_000_000)
+    return `${(size / 1_000_000_000).toFixed(2)} GB`;
+  if (size < 1_000_000_000_000_000)
+    return `${(size / 1_000_000_000_000).toFixed(2)} TB`;
+  return `${size} bytes`;
+}

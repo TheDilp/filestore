@@ -41,7 +41,6 @@ type DropdownItemType = {
   title?: string;
   child?: ReactNode;
   icon?: AvailableIcons;
-  image?: string;
   iconColor?: string;
   subItems?: DropdownItemType[];
   isDisabled?: boolean;
@@ -67,7 +66,7 @@ const DropdownClasses = tv({
   },
 });
 const DropdownItemClasses = tv({
-  base: "group border-secondary font-medium text-primary text-sm group-hover:bg-secondary-highlight active:bg-primary m-0 flex w-full cursor-pointer flex-nowrap items-center justify-center truncate border-b px-2 py-1.5 text-left outline-0 transition-colors last:border-0",
+  base: "group border-secondary  font-medium text-primary text-sm group-hover:bg-secondary-highlight m-0 active:bg-secondary flex w-full cursor-pointer flex-nowrap items-center justify-center truncate border-b px-4 py-1.5 text-left outline-0 transition-colors last:border-0",
   variants: {
     variant: {
       primary: "bg-white text-primary",
@@ -81,11 +80,9 @@ const DropdownItemClasses = tv({
       true: "bg-disabled text-secondary active:bg-disabled active:text-secondary hover:bg-disabled hover:text-secondary cursor-not-allowed",
     },
     hasIcon: {
-      true: "justify-between",
+      true: "justify-between gap-x-2",
     },
-    hasImage: {
-      true: "justify-start gap-x-2",
-    },
+
     hasSubitems: {
       true: "",
       false: "",
@@ -263,7 +260,6 @@ function DropdownComponent({
                               icon={dropdownItem.icon}
                               iconColor={dropdownItem?.iconColor}
                               id={dropdownItem.id}
-                              image={dropdownItem?.image}
                               isDisabled={dropdownItem?.isDisabled}
                               onClick={
                                 //* This is to apply disabled styles for the dropdown item
@@ -300,7 +296,6 @@ function DropdownComponent({
                             icon={dropdownItem.icon}
                             iconColor={dropdownItem?.iconColor}
                             id={dropdownItem.id}
-                            image={dropdownItem?.image}
                             isDisabled={dropdownItem?.isDisabled}
                             onClick={
                               //* This is to apply disabled styles for the dropdown item
@@ -342,14 +337,13 @@ function DropdownItem({
   subItems,
   iconColor,
   isDisabled,
-  image,
+
   child,
   variant = "primary",
 }: DropdownItemType) {
   const dropdownItemClasses = DropdownItemClasses({
     isDisabled: isDisabled || (!onClick && !subItems?.length),
     hasSubitems: !!subItems?.length,
-    hasImage: !!image,
     hasIcon: !!icon,
     variant,
   });
@@ -365,24 +359,15 @@ function DropdownItem({
       role="menuitem"
       tabIndex={0}
     >
-      {image ? (
-        <div className="ml-auto flex gap-x-2">
-          <div>
-            <img src={image} />
-          </div>
+      {icon ? (
+        <div>
+          <Icon color={iconColor} fontSize={20} icon={icon} />
         </div>
       ) : null}
       {label && !child ? (
         <div className="w-full truncate select-none">{label}</div>
       ) : null}
       {child ?? null}
-      {icon ? (
-        <div className="ml-auto flex gap-x-2 px-2">
-          <div>
-            <Icon color={iconColor} fontSize={20} icon={icon} />
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

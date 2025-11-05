@@ -39,3 +39,5 @@ export type BaseComponentActionType = {
   tooltip?: string | ReactNode;
   tooltipDelay?: { open?: number; close?: number } | number;
 };
+
+export type AllowedPlacements = "left" | "right" | "top" | "bottom";

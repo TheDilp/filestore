@@ -9,6 +9,8 @@ export type Variant =
   | "success"
   | "warning"
   | "error";
+
+export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 export type BaseFormComponent = {
   title?: string;
   variant?: Variant;

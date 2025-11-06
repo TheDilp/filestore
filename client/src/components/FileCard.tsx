@@ -4,6 +4,7 @@ import type { infer as zodInfer } from "zod";
 import { Icons } from "../enums";
 import type { FileSchema } from "../schemas";
 import {
+  fetchFunction,
   fileFetchFunction,
   formatDateTime,
   getFileSize,
@@ -30,7 +31,35 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
             <Icon icon={Icons[type]} color={getIconColor(type)} fontSize={32} />
           </div>
         </div>
-        <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
+        <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
+          <Button
+            onClick={undefined}
+            iconSize={20}
+            hasNoBorder
+            isOutline
+            icon={Icons.preview}
+          />
+        </div>
+        <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
+          <Button
+            iconSize={20}
+            onClick={async () => {
+              const res = await fetchFunction<string>({
+                model: "files",
+                id,
+                action: "read",
+                method: "GET",
+                urlSuffix: "link",
+              });
+              const link = res.data;
+              window.navigator.clipboard.writeText(link);
+            }}
+            hasNoBorder
+            isOutline
+            icon={Icons.copy}
+          />
+        </div>
+        <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
           <Dropdown
             items={[
               {
@@ -54,7 +83,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
                 id: "share",
                 title: "Share",
                 icon: Icons.share,
-                onClick: () => {},
+                onClick: undefined,
               },
               {
                 id: "delete",

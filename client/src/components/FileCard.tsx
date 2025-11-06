@@ -71,7 +71,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
                   method: "GET",
                   urlSuffix: "link",
                 });
-
+                if (audioRef.current) audioRef.current.volume = 0.25;
                 setPreview(res.data);
               }
             }}

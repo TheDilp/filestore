@@ -2,6 +2,7 @@ import { useParams } from "@tanstack/react-router";
 import type { infer as zodInfer } from "zod";
 
 import { Icons } from "../enums";
+import { useCreateNotification } from "../hooks";
 import type { FileSchema } from "../schemas";
 import {
   fetchFunction,
@@ -21,6 +22,8 @@ type Props = Pick<
 
 export function FileCard({ id, title, type, createdAt, size }: Props) {
   const params = useParams({ from: "/browser/{-$path}" });
+
+  const createNotification = useCreateNotification();
 
   return (
     <div className="border border-secondary p-4 rounded-md hover:shadow transition-shadow group max-h-28">
@@ -53,6 +56,11 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
               });
               const link = res.data;
               window.navigator.clipboard.writeText(link);
+              createNotification({
+                title: "Link copied successfully.",
+                variant: "success",
+                icon: Icons.copy,
+              });
             }}
             hasNoBorder
             isOutline

@@ -166,6 +166,7 @@ export function Button({
   hasNoBorder,
   iconPosition = "right",
   variant = "primary",
+  size = "md",
 }: Props) {
   const { base } = classes({
     variant,
@@ -174,6 +175,7 @@ export function Button({
     isFullWidth,
     hasIconOnly: !title && !!icon,
     hasNoBorder,
+    size,
   });
   return (
     <button

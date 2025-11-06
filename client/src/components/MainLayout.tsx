@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 import { drawerAtom } from "../atoms";
 import { Icons } from "../enums";
 import { useNotifications } from "../hooks";
-import { isText } from "../utils";
+import { isText, isVideo } from "../utils";
 import { Button } from "./Button";
 import { Notification } from "./Notification";
 
@@ -59,8 +59,9 @@ function Drawer() {
 
       return "";
     },
-    enabled: drawer?.type !== "pdf",
+    enabled: drawer?.type !== "pdf" && !isVideo(drawer?.type || "mp4"),
   });
+
   return (
     <div
       className={`w-screen h-screen pointer-events-none left-0 transition-colors duration-500 absolute ${drawer ? "bg-black/80 " : "bg-transparent"} z-10`}
@@ -101,6 +102,9 @@ function Drawer() {
           isText(drawer?.type) &&
           drawer?.type !== "json" ? (
             <p className="text-lg">{data}</p>
+          ) : null}
+          {drawer?.type && isVideo(drawer?.type) ? (
+            <video className="w-full h-full" controls src={drawer?.data?.url} />
           ) : null}
         </div>
       </div>

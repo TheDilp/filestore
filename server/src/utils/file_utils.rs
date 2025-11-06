@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use aws_sdk_s3::primitives::ByteStream;
 use axum::extract::multipart::Field;
 
@@ -52,7 +54,11 @@ pub async fn upload_file(
         .await;
 
     if upload.is_ok() {
-        Ok((name, FileTypes::from(content_type), size))
+        Ok((
+            name,
+            FileTypes::from_str(content_type.as_str()).unwrap_or(FileTypes::Other(content_type)),
+            size,
+        ))
     } else {
         tracing::error!("ERROR UPLOADING FILE - {}", upload.err().unwrap());
         Err(false)

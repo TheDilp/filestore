@@ -10,6 +10,7 @@ pub async fn upload_file(
     state: &AppState,
     field: Field<'_>,
     file_path: &String,
+    is_public: &bool,
 ) -> Result<(String, FileTypes, i64), bool> {
     let mut size: i64 = 0;
     let mut data = Vec::new();
@@ -42,7 +43,10 @@ pub async fn upload_file(
         .bucket(&state.s3_name)
         .key(file_path)
         .body(body)
-        .acl(aws_sdk_s3::types::ObjectCannedAcl::Private)
+        .acl(match is_public {
+            true => aws_sdk_s3::types::ObjectCannedAcl::PublicRead,
+            false => aws_sdk_s3::types::ObjectCannedAcl::Private,
+        })
         .content_type(&content_type)
         .send()
         .await;

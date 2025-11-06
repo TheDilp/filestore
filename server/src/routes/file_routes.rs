@@ -33,10 +33,16 @@ fn default_path() -> String {
     String::from("")
 }
 
+fn default_public() -> bool {
+    false
+}
+
 #[derive(Deserialize, Serialize)]
 struct FileQuery {
     #[serde(default = "default_path")]
     path: String,
+    #[serde(default = "default_public")]
+    is_public: bool,
 }
 
 async fn upload_file_route(
@@ -52,7 +58,7 @@ async fn upload_file_route(
         .map_err(|err| AppError::db_error(err))?;
 
     let statement = tx
-        .prepare("INSERT INTO files (id, title, owner_id, size, type, path) VALUES ($1, $2, $3, $4, $5, $6);")
+        .prepare("INSERT INTO files (id, title, owner_id, size, type, path, is_public) VALUES ($1, $2, $3, $4, $5, $6, $7);")
         .await
         .map_err(|err| AppError::db_error(err))?;
 
@@ -68,7 +74,7 @@ async fn upload_file_route(
         let file_path = format!("{}{}", &query.path, &file_id);
         tracing::warn!("{}", file_path);
         debug!("BEGIN FILE UPLOAD");
-        let upload_result = upload_file(&state, field, &file_path).await;
+        let upload_result = upload_file(&state, field, &file_path, &query.is_public).await;
         debug!("END FILE UPLOAD");
         if let Ok((title, file_type, size)) = upload_result {
             let db_result = tx
@@ -81,6 +87,7 @@ async fn upload_file_route(
                         &size,
                         &file_type.to_string(),
                         &query.path,
+                        &query.is_public,
                     ],
                 )
                 .await;
@@ -164,16 +171,22 @@ async fn generate_link(
         .query_one("SELECT path FROM files WHERE id = $1;", &[&id])
         .await
         .map_err(|err| AppError::db_error(err))?;
-    let path: String = row.get("path");
+    let path: Option<String> = row.get("path");
 
     let provider =
         S3Providers::from_str(&state.s3_provider).map_err(|err| AppError::critical_error(err))?;
     let link = match provider {
         S3Providers::DigitalOcean => format!(
-            "https://{bucket}.{region}.cdn.digitaloceanspaces.com/{path}",
+            "https://{bucket}.{region}.cdn.digitaloceanspaces.com/{path}{id}",
             bucket = state.s3_name,
             region = state.s3_region,
             path = path
+                .map(|p| match p.is_empty() {
+                    true => p,
+                    false => format!("{}/", p),
+                })
+                .unwrap_or_default(),
+            id = id
         ),
         S3Providers::AWS => {
             let p = state

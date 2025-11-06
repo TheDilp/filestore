@@ -8,6 +8,7 @@ export const Icons = {
   arrowRight: "lucide:chevron-right" as const,
   arrowUp: "lucide:chevron-up" as const,
   bmp: "bi:filetype-bmp" as const,
+  close: "material-symbols:close-rounded" as const,
   cs: "bi:filetype-cs" as const,
   css: "bi:filetype-css" as const,
   csv: "bi:filetype-csv" as const,

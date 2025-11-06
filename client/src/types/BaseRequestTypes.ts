@@ -5,7 +5,8 @@ export type RequestActionsType =
   | "update"
   | "delete"
   | "search"
-  | "upload";
+  | "upload"
+  | "download";
 export type RequestMethodsType = "GET" | "POST" | "PATCH" | "DELETE";
 
 export type RequestFilterOperators =

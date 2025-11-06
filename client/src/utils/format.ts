@@ -47,10 +47,12 @@ export function getIconColor(type: zodInfer<typeof FileSchema>["type"]) {
     case "doc":
     case "docx":
     case "txt":
-    case "pdf":
     case "md":
     case "mdx":
       return "#2B579A";
+
+    case "pdf":
+      return "#E42121";
 
     case "xls":
     case "xlsx":

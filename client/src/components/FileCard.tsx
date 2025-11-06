@@ -30,7 +30,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
             <Icon icon={Icons[type]} color={getIconColor(type)} fontSize={32} />
           </div>
         </div>
-        <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
+        <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
           <Dropdown
             items={[
               {

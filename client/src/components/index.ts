@@ -6,4 +6,5 @@ export * from "./FileRow";
 export * from "./Icon";
 export * from "./Input";
 export * from "./MainLayout";
+export * from "./Notification";
 export * from "./Select";

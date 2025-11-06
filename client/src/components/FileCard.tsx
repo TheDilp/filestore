@@ -1,7 +1,9 @@
 import { useParams } from "@tanstack/react-router";
+import { useSetAtom } from "jotai";
 import { useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
+import { drawerAtom } from "../atoms";
 import { Icons } from "../enums";
 import { useCreateNotification } from "../hooks";
 import type { FileSchema } from "../schemas";
@@ -13,6 +15,8 @@ import {
   getIconColor,
   isAudio,
   isImage,
+  isText,
+  isVideo,
 } from "../utils";
 import { Button } from "./Button";
 import { Dropdown } from "./Dropdown";
@@ -28,6 +32,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
   const [preview, setPreview] = useState<string>("");
   const createNotification = useCreateNotification();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const openPreviewDrawer = useSetAtom(drawerAtom);
   return (
     <div
       className={`border border-secondary p-4 rounded-md hover:shadow group ${preview ? "h-56" : "h-28"} transition-[shadow,height] duration-300 ease-in-out`}
@@ -42,22 +47,33 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
         <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
           <Button
             onClick={async () => {
-              if (preview) {
-                if (audioRef.current) audioRef.current.pause();
+              if (isText(type) || isVideo(type) || type === "pdf") {
+                const res = await fetchFunction<string>({
+                  model: "files",
+                  id,
+                  action: "read",
+                  method: "GET",
+                  urlSuffix: "link",
+                });
 
-                setPreview("");
-                return;
+                openPreviewDrawer({ title, data: { id, url: res.data }, type });
+              } else {
+                if (preview) {
+                  if (audioRef.current) audioRef.current.pause();
+                  setPreview("");
+                  return;
+                }
+
+                const res = await fetchFunction<string>({
+                  model: "files",
+                  id,
+                  action: "read",
+                  method: "GET",
+                  urlSuffix: "link",
+                });
+
+                setPreview(res.data);
               }
-
-              const res = await fetchFunction<string>({
-                model: "files",
-                id,
-                action: "read",
-                method: "GET",
-                urlSuffix: "link",
-              });
-
-              setPreview(res.data);
             }}
             iconSize={20}
             hasNoBorder
@@ -148,7 +164,9 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
             alt={title}
           />
         ) : null}
-        {isAudio(type) ? <audio ref={audioRef} controls src={preview} /> : null}
+        {isAudio(type) ? (
+          <audio ref={audioRef} autoPlay={!!preview} controls src={preview} />
+        ) : null}
       </div>
     </div>
   );

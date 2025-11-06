@@ -11,6 +11,7 @@ export const Icons = {
   cs: "bi:filetype-cs" as const,
   css: "bi:filetype-css" as const,
   csv: "bi:filetype-csv" as const,
+  copy: "si:copy-line" as const,
   dashboard: "clarity:dashboard-line" as const,
   delete: "ph:trash" as const,
   doc: "bi:filetype-docx" as const,

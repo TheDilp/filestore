@@ -13,6 +13,7 @@ type Props = {
   headers?: Record<string, string>;
   searchParams?: SearchParamsOption;
   retry?: number;
+  urlSuffix?: string;
 };
 
 export async function authFetchFunction<T>({
@@ -59,9 +60,10 @@ export async function fetchFunction<T>({
   headers,
   id,
   searchParams,
+  urlSuffix,
 }: Props) {
   const res = await ky<ResponseDataType<T>>(
-    `${import.meta.env.VITE_SERVER_URL}/api/v1/${model}/${action}${id ? `/${id}` : ""}`,
+    `${import.meta.env.VITE_SERVER_URL}/api/v1/${model}/${action}${id ? `/${id}` : ""}${urlSuffix ? `/${urlSuffix}` : ""}`,
     {
       method,
       body,

@@ -1,4 +1,5 @@
 import { useParams } from "@tanstack/react-router";
+import { useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
 import { Icons } from "../enums";
@@ -10,6 +11,8 @@ import {
   formatDateTime,
   getFileSize,
   getIconColor,
+  isAudio,
+  isImage,
 } from "../utils";
 import { Button } from "./Button";
 import { Dropdown } from "./Dropdown";
@@ -22,11 +25,13 @@ type Props = Pick<
 
 export function FileCard({ id, title, type, createdAt, size }: Props) {
   const params = useParams({ from: "/browser/{-$path}" });
-
+  const [preview, setPreview] = useState<string>("");
   const createNotification = useCreateNotification();
-
+  const audioRef = useRef<HTMLAudioElement>(null);
   return (
-    <div className="border border-secondary p-4 rounded-md hover:shadow transition-shadow group max-h-28">
+    <div
+      className={`border border-secondary p-4 rounded-md hover:shadow group ${preview ? "h-56" : "h-28"} transition-[shadow,height] duration-300 ease-in-out`}
+    >
       <div className="flex flex-row items-center justify-between h-10">
         <div className="flex flex-1 flex-no-wrap justify-between max-w-full items-center gap-x-4">
           <h3 className="text-sm font-medium line-clamp-1">{title}</h3>
@@ -36,7 +41,24 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
         </div>
         <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
           <Button
-            onClick={undefined}
+            onClick={async () => {
+              if (preview) {
+                if (audioRef.current) audioRef.current.pause();
+
+                setPreview("");
+                return;
+              }
+
+              const res = await fetchFunction<string>({
+                model: "files",
+                id,
+                action: "read",
+                method: "GET",
+                urlSuffix: "link",
+              });
+
+              setPreview(res.data);
+            }}
             iconSize={20}
             hasNoBorder
             isOutline
@@ -114,6 +136,19 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
       <div className="text-xs flex flex-col gap-y-0.5 text-zinc-400">
         <span>Size: {getFileSize(size)}</span>
         <span>Uploaded: {formatDateTime(createdAt)}</span>
+      </div>
+
+      <div
+        className={`flex items-center justify-center flex-col ${preview ? "opacity-100 h-30 pointer-events-auto" : "opacity-0 h-0 pointer-events-none"} transition-[opacity,height] duration-300`}
+      >
+        {isImage(type) ? (
+          <img
+            className={`object-contain w-full h-full ${preview ? "opacity-100" : "opacity-0"}`}
+            src={preview}
+            alt={title}
+          />
+        ) : null}
+        {isAudio(type) ? <audio ref={audioRef} controls src={preview} /> : null}
       </div>
     </div>
   );

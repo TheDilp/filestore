@@ -15,6 +15,7 @@ import {
   getIconColor,
   isAudio,
   isImage,
+  isPreviewable,
   isText,
   isVideo,
 } from "../utils";
@@ -50,7 +51,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
         </div>
         <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
           <Button
-            isDisabled={type === "other"}
+            isDisabled={!isPreviewable(type)}
             onClick={async () => {
               if (isText(type) || isVideo(type) || type === "pdf") {
                 const res = await fetchFunction<string>({

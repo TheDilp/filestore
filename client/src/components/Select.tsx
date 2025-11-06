@@ -39,7 +39,7 @@ const classes = tv({
       },
       secondary: {
         base: "border-secondary focus-within:outline-info-highlight",
-        labelClasses: "text-secondary group-focus-within:text-primary",
+        labelClasses: "text-primary-highlight group-focus-within:text-primary",
         optionsContainer: "border-secondary",
       },
       info: {

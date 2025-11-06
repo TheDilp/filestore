@@ -41,7 +41,11 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
         <div className="flex flex-1 flex-no-wrap justify-between max-w-full items-center gap-x-4">
           <h3 className="text-sm font-medium line-clamp-1">{title}</h3>
           <div>
-            <Icon icon={Icons[type]} color={getIconColor(type)} fontSize={32} />
+            <Icon
+              icon={Icons?.[type] || Icons.unknownFileType}
+              color={getIconColor(type)}
+              fontSize={32}
+            />
           </div>
         </div>
         <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">

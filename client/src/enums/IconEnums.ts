@@ -77,6 +77,7 @@ export const Icons = {
   xml: "bi:filetype-xml" as const,
   yml: "bi:filetype-yml" as const,
   zip: "ph:file-zip" as const,
+  unknownFileType: "carbon:document-unknown" as const,
 };
 
 export type AvailableIcons = (typeof Icons)[keyof typeof Icons];

@@ -9,6 +9,7 @@ type Props = {
   action: RequestActionsType;
   method: RequestMethodsType;
   body?: string | FormData;
+  id?: string;
   headers?: Record<string, string>;
   searchParams?: SearchParamsOption;
   retry?: number;
@@ -56,10 +57,11 @@ export async function fetchFunction<T>({
   method,
   body,
   headers,
+  id,
   searchParams,
 }: Props) {
   const res = await ky<ResponseDataType<T>>(
-    `${import.meta.env.VITE_SERVER_URL}/api/v1/${model}/${action}`,
+    `${import.meta.env.VITE_SERVER_URL}/api/v1/${model}/${action}${id ? `/${id}` : ""}`,
     {
       method,
       body,
@@ -87,4 +89,20 @@ export async function fetchEnumFunction<T>({ model }: Pick<Props, "model">) {
   );
 
   return await res.json();
+}
+
+export async function fileFetchFunction({
+  id,
+  searchParams,
+}: Pick<Props, "searchParams"> & { id: string }) {
+  const res = await ky(
+    `${import.meta.env.VITE_SERVER_URL}/api/v1/files/download/${id}`,
+    {
+      method: "GET",
+      credentials: "include",
+      searchParams,
+    }
+  );
+
+  return await res.blob();
 }

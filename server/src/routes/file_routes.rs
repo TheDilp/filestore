@@ -1,3 +1,6 @@
+use std::{str::FromStr, time::Duration};
+
+use aws_sdk_s3::presigning::PresigningConfig;
 use axum::{
     Extension, Router,
     body::Body,
@@ -16,7 +19,7 @@ use uuid::Uuid;
 
 use crate::{
     consts::MAX_FILE_SIZE,
-    enums::{errors::AppError, file_enums::FileTypes},
+    enums::{errors::AppError, file_enums::FileTypes, storage_enums::S3Providers},
     models::{
         auth::AuthSession,
         response::{AppErrorResponse, AppResponse, RouteResponse},
@@ -151,6 +154,43 @@ async fn download_file(
     Ok(response)
 }
 
+async fn generate_link(
+    State(state): State<AppState>,
+    Path(id): Path<Uuid>,
+) -> RouteResponse<String> {
+    let conn = state.get_db_conn().await?;
+
+    let row = conn
+        .query_one("SELECT path FROM files WHERE id = $1;", &[&id])
+        .await
+        .map_err(|err| AppError::db_error(err))?;
+    let path: String = row.get("path");
+
+    let provider =
+        S3Providers::from_str(&state.s3_provider).map_err(|err| AppError::critical_error(err))?;
+    let link = match provider {
+        S3Providers::DigitalOcean => format!(
+            "https://{bucket}.{region}.cdn.digitaloceanspaces.com/{path}",
+            bucket = state.s3_name,
+            region = state.s3_region,
+            path = path
+        ),
+        S3Providers::AWS => {
+            let p = state
+                .s3_client
+                .get_object()
+                .bucket(state.s3_name)
+                .presigned(PresigningConfig::expires_in(Duration::from_secs(3600)).unwrap())
+                .await
+                .map_err(|err| AppError::s3_error(err))?;
+
+            p.uri().to_owned()
+        }
+    };
+
+    Ok(AppResponse::default_response(link))
+}
+
 async fn list_files(
     State(state): State<AppState>,
     Query(query): Query<FileQuery>,
@@ -168,22 +208,6 @@ async fn list_files(
         .query(stmt, &[&format!("%{}", &query.path)])
         .await
         .map_err(|err| AppError::db_error(err))?;
-
-    let test = state
-        .s3_client
-        .list_objects_v2()
-        .bucket(&state.s3_name)
-        .send()
-        .await
-        .unwrap()
-        .contents
-        .unwrap();
-
-    println!("\n");
-    println!("========================");
-    println!("{:?}", test);
-    println!("========================");
-    println!("\n");
 
     Ok(AppResponse::default_response(rows.serialize_list()))
 }
@@ -228,6 +252,7 @@ pub fn file_routes() -> Router<AppState> {
             "/files",
             Router::new()
                 .route("/upload", post(upload_file_route))
+                .route("/read/{id}/link", get(generate_link))
                 .route("/download/{id}", get(download_file))
                 .route("/list", get(list_files))
                 .route("/{id}", delete(delete_file)),

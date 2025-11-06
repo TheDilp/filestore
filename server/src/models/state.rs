@@ -27,6 +27,9 @@ pub struct AppState {
     pub cookie_key: Key,
     pub s3_client: S3Client,
     pub s3_name: String,
+    pub s3_region: String,
+    pub s3_provider: String,
+    pub cdn_endpoint: String,
     pub environment: Environment,
 }
 

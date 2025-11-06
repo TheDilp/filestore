@@ -65,7 +65,8 @@ async fn main() {
     let s3_secret = var("S3_SECRET").expect("Env var `S3_SECRET` not set");
     let s3_name = var("S3_NAME").expect("Env var `S3_SECRET` not set");
     let s3_region = var("S3_REGION").expect("Env var `S3_REGION` not set");
-
+    let s3_provider = var("S3_PROVIDER").expect("Env var `S3_PROVIDER` not set");
+    let cdn_endpoint = var("CDN_ENDPOINT").unwrap_or(String::from(""));
     //* PG DB Config
     let mut cfg = deadpool_postgres::Config::new();
     cfg.url = Some(db_url.to_string());
@@ -88,7 +89,7 @@ async fn main() {
     let config = aws_sdk_s3::config::Builder::new()
         .behavior_version(BehaviorVersion::latest())
         .force_path_style(true)
-        .region(Region::new(s3_region))
+        .region(Region::new(s3_region.clone()))
         .endpoint_url(s3_endpoint)
         .credentials_provider(s3_credentials)
         .build();
@@ -154,6 +155,9 @@ async fn main() {
         cookie_key,
         s3_client,
         s3_name,
+        s3_region,
+        s3_provider,
+        cdn_endpoint,
         environment,
     };
 

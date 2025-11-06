@@ -44,3 +44,11 @@ export type BaseComponentActionType = {
 };
 
 export type AllowedPlacements = "left" | "right" | "top" | "bottom";
+
+export type UINotificationType = {
+  id: string;
+  title: string;
+  icon?: AvailableIcons;
+  variant?: Variant;
+  timer?: number;
+};

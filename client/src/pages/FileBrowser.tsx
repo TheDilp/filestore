@@ -1,4 +1,4 @@
-import { createLazyRoute, useParams } from "@tanstack/react-router";
+import { createLazyRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
@@ -17,19 +17,13 @@ const sortOptions = [
 function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
   const [view, setView] = useState<"grid" | "list">("grid");
-  const params = useParams({ from: "/browser/{-$path}" });
 
   const ref = useRef<HTMLInputElement>(null);
 
-  const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>(
-    {
-      model: "files",
-      fields: ["id", "title"],
-    },
-    {
-      searchParams: [["path", params.path || "/"]],
-    }
-  );
+  const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>({
+    model: "files",
+    fields: ["id", "title"],
+  });
 
   async function uploadFiles() {
     if (!files) return;
@@ -43,7 +37,10 @@ function FileBrowser() {
       action: "upload",
       body: formData,
       method: "POST",
-      searchParams: new URLSearchParams([["path", params?.path || "/"]]),
+      searchParams: [
+        ["path", ""],
+        ["is_public", true],
+      ],
     });
     if (res.ok && ref.current) {
       ref.current.value = "";
@@ -62,7 +59,10 @@ function FileBrowser() {
             <Input
               ref={ref}
               isMultiple
-              accept="image/*, audio/*, video/*"
+              accept={
+                import.meta.env.VITE_ACCEPT_FILE_TYPES ||
+                "image/*, audio/*, video/*"
+              }
               onChange={(e) => {
                 if (e.files) setFiles(e.files);
               }}
@@ -100,17 +100,20 @@ function FileBrowser() {
             <Button
               isOutline
               icon={Icons.sort}
+              size="lg"
               onClick={undefined}
               variant="secondary"
             />
             <Button
               isOutline={view !== "grid"}
+              size="lg"
               icon={Icons.grid}
               variant={view === "grid" ? "info" : "secondary"}
               onClick={() => setView("grid")}
             />
             <Button
               icon={Icons.list}
+              size="lg"
               isOutline={view !== "list"}
               variant={view === "list" ? "info" : "secondary"}
               onClick={() => setView("list")}
@@ -122,6 +125,7 @@ function FileBrowser() {
             {data.map((item) => (
               <FileCard
                 key={item.id}
+                id={item.id}
                 title={item.title}
                 createdAt={item.createdAt}
                 type={item.type}

@@ -20,6 +20,7 @@ type Props = Pick<
 
 export function FileCard({ id, title, type, createdAt, size }: Props) {
   const params = useParams({ from: "/browser/{-$path}" });
+
   return (
     <div className="border border-secondary p-4 rounded-md hover:shadow transition-shadow group max-h-28">
       <div className="flex flex-row items-center justify-between h-10">
@@ -48,6 +49,19 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
                   URL.revokeObjectURL(link.href);
                   link.remove();
                 },
+              },
+              {
+                id: "share",
+                title: "Share",
+                icon: Icons.share,
+                onClick: () => {},
+              },
+              {
+                id: "delete",
+                title: "Delete",
+                icon: Icons.delete,
+                onClick: () => {},
+                iconColor: "red",
               },
             ]}
           >

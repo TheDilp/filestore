@@ -12,7 +12,7 @@ import { Icon } from "./Icon";
 
 const classes = tv({
   slots: {
-    base: "border-primary dark:bg-primary dark:border-secondary relative z-62 flex h-fit w-96 flex-col gap-y-1 rounded-md border bg-white px-1 shadow-lg transition-all",
+    base: "border-secondary relative z-62 flex h-fit w-96 flex-col gap-y-1 rounded-md border bg-white px-1 shadow-lg transition-all",
     titleContainer:
       "flex items-center border-b border-gray-300 pt-2 pb-2 font-medium",
     progressBar: "absolute top-0 left-0 h-1 w-full rounded-t-md transition-all",

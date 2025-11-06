@@ -12,6 +12,7 @@ pub async fn upload_file(
     file_path: &String,
 ) -> Result<(String, FileTypes, i64), bool> {
     let mut size: i64 = 0;
+    let mut data = Vec::new();
     let mut stream = field;
     while let Some(chunk) = stream.chunk().await.map_err(|err| {
         AppError::critical_error(format!(
@@ -22,6 +23,7 @@ pub async fn upload_file(
         false
     })? {
         size += chunk.len() as i64;
+        data.extend_from_slice(&chunk);
     }
 
     let content_type = stream.content_type();
@@ -32,14 +34,6 @@ pub async fn upload_file(
     }
 
     let content_type = content_type.unwrap().to_string();
-    let data = stream.bytes().await;
-    if data.is_err() {
-        tracing::error!("ERROR GETTING FILE DATA - {}", data.err().unwrap());
-        return Err(false);
-    }
-
-    let data = data.unwrap().to_vec();
-
     let body = ByteStream::from(data);
 
     let upload = state

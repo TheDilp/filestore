@@ -6,10 +6,11 @@ use axum::{
     routing::{delete, get, post},
 };
 
-use reqwest::header::{CONTENT_DISPOSITION, CONTENT_TYPE};
+use reqwest::header::{CONTENT_DISPOSITION, CONTENT_LENGTH, CONTENT_TYPE};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use tokio_util::io::ReaderStream;
 use tracing::debug;
 use uuid::Uuid;
 
@@ -25,8 +26,13 @@ use crate::{
     utils::file_utils::upload_file,
 };
 
+fn default_path() -> String {
+    String::from("")
+}
+
 #[derive(Deserialize, Serialize)]
 struct FileQuery {
+    #[serde(default = "default_path")]
     path: String,
 }
 
@@ -56,8 +62,8 @@ async fn upload_file_route(
         debug!("ENTERED WHILE LOOP FOR FIELDS");
 
         let file_id = Uuid::new_v4();
-        let file_path = format!("{}/{}", &query.path, &file_id);
-
+        let file_path = format!("{}{}", &query.path, &file_id);
+        tracing::warn!("{}", file_path);
         debug!("BEGIN FILE UPLOAD");
         let upload_result = upload_file(&state, field, &file_path).await;
         debug!("END FILE UPLOAD");
@@ -115,39 +121,33 @@ async fn download_file(
         .await
         .map_err(|err| AppError::db_error(err))?;
 
-    let id: Uuid = row.get("id");
     let title: String = row.get("title");
     let file_type: FileTypes = row.get("type");
 
-    let bytes = state
+    let resp = state
         .s3_client
         .get_object()
         .bucket(&state.s3_name)
-        .key(format!("{}/{}", query.path, id))
+        .key(format!("{}{}", &query.path, id))
         .send()
         .await
         .map_err(|err| AppError::s3_error(err))?;
 
-    let bytes = bytes
-        .body
-        .collect()
-        .await
-        .map_err(|err| AppError::critical_error(err))?
-        .into_bytes()
-        .to_vec();
+    let content_length = resp.content_length().unwrap_or(0);
+    let stream = resp.body.into_async_read();
+    let reader_stream = ReaderStream::new(stream);
+
+    let body = Body::from_stream(reader_stream);
 
     let response = Response::builder()
         .header(CONTENT_TYPE, file_type.content_type())
+        .header(CONTENT_LENGTH, content_length)
         .header(
             CONTENT_DISPOSITION,
-            format!(
-                "attachment; filename=\"{}\"",
-                format_args!("{}.{}", title, file_type)
-            ),
+            format!("attachment; filename=\"{}.{}\"", title, file_type),
         )
-        .body(bytes.into())
+        .body(body)
         .map_err(|err| AppError::critical_error(err))?;
-
     Ok(response)
 }
 
@@ -165,9 +165,25 @@ async fn list_files(
     OFFSET 0;";
 
     let rows = conn
-        .query(stmt, &[&format!("%{}", query.path)])
+        .query(stmt, &[&format!("%{}", &query.path)])
         .await
         .map_err(|err| AppError::db_error(err))?;
+
+    let test = state
+        .s3_client
+        .list_objects_v2()
+        .bucket(&state.s3_name)
+        .send()
+        .await
+        .unwrap()
+        .contents
+        .unwrap();
+
+    println!("\n");
+    println!("========================");
+    println!("{:?}", test);
+    println!("========================");
+    println!("\n");
 
     Ok(AppResponse::default_response(rows.serialize_list()))
 }
@@ -191,7 +207,7 @@ async fn delete_file(
     .await
     .map_err(|err| AppError::db_error(err))?;
 
-    let key = format!("{}/{}", query.path, id);
+    let key = format!("{}{}", &query.path, id);
     state
         .s3_client
         .delete_object()

@@ -42,7 +42,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
           <h3 className="text-sm font-medium line-clamp-1">{title}</h3>
           <div>
             <Icon
-              icon={Icons?.[type] || Icons.unknownFileType}
+              icon={type === "other" ? Icons.unknownFileType : Icons?.[type]}
               color={getIconColor(type)}
               fontSize={32}
             />
@@ -50,6 +50,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
         </div>
         <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
           <Button
+            isDisabled={type === "other"}
             onClick={async () => {
               if (isText(type) || isVideo(type) || type === "pdf") {
                 const res = await fetchFunction<string>({

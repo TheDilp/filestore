@@ -53,6 +53,7 @@ const FileTypesSchema = enum_([
   "otf",
   "woff",
   "exe",
+  "other",
 ]);
 
 export const FileSchema = object({

@@ -14,6 +14,7 @@ export type Size = "xs" | "sm" | "md" | "lg" | "xl";
 export type BaseFormComponent = {
   title?: string;
   variant?: Variant;
+  size?: Size;
 };
 
 export type BaseFormEntryComponent<T = string | number> = {

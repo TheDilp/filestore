@@ -83,7 +83,7 @@ function Drawer() {
             />
           </div>
         </h2>
-        <div className="p-4 max-h-[95%] overflow-y-auto ">
+        <div className="p-4 max-h-[95%] overflow-y-auto h-[95%]">
           {drawer?.type === "pdf" ? (
             <iframe
               className="w-full h-full"

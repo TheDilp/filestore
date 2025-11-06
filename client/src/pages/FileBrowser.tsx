@@ -13,6 +13,10 @@ const sortOptions = [
   { id: "type", label: "Type", value: "type" },
   { id: "created_at", label: "Uploaded at", value: "created_at" },
 ];
+const groupOptions = [
+  { id: "type", label: "Type", value: "type" },
+  { id: "title", label: "Title", value: "title" },
+];
 
 function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
@@ -86,12 +90,23 @@ function FileBrowser() {
         <hr className="border-secondary" />
         <div className="flex items-center justify-between max-sm:gap-y-8 max-sm:flex-col">
           <h2 className="text-2xl font-semibold max-sm:hidden">Your Files</h2>
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-end gap-x-2">
             <div className="w-46">
               <Select
                 options={sortOptions}
                 onChange={() => {}}
                 name="sort"
+                value=""
+                title="Sort"
+                variant="secondary"
+              />
+            </div>
+            <div className="w-30">
+              <Select
+                options={groupOptions}
+                onChange={() => {}}
+                name="group"
+                title="Group"
                 value=""
                 variant="secondary"
               />
@@ -100,20 +115,20 @@ function FileBrowser() {
             <Button
               isOutline
               icon={Icons.sort}
-              size="lg"
+              size="xl"
               onClick={undefined}
               variant="secondary"
             />
             <Button
               isOutline={view !== "grid"}
-              size="lg"
+              size="xl"
               icon={Icons.grid}
               variant={view === "grid" ? "info" : "secondary"}
               onClick={() => setView("grid")}
             />
             <Button
               icon={Icons.list}
-              size="lg"
+              size="xl"
               isOutline={view !== "list"}
               variant={view === "list" ? "info" : "secondary"}
               onClick={() => setView("list")}

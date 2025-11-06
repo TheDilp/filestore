@@ -17,7 +17,7 @@ export function useRemoveNotification() {
 }
 export function useCreateNotification() {
   const setNotifications = useSetAtom(notificationsAtom);
-  function createNotification(notification: UINotificationType) {
+  function createNotification(notification: Omit<UINotificationType, "id">) {
     setNotifications((prev) =>
       prev.concat({ ...notification, id: crypto.randomUUID() })
     );

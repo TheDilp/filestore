@@ -1,6 +1,7 @@
 import type { infer as zodInfer } from "zod";
 
 import type { FileSchema } from "../schemas";
+import type { Variant } from "../types";
 
 export function sentenceCase(field: string): string {
   const text =
@@ -115,5 +116,26 @@ export function getIconColor(type: zodInfer<typeof FileSchema>["type"]) {
 
     default:
       return "#9E9E9E";
+  }
+}
+
+export function variantToHex(variant: Variant): string {
+  switch (variant) {
+    case "primary":
+      return "#9ca3af";
+
+    case "secondary":
+      return "#d1d5db";
+    case "info":
+      return "#3b82f6";
+    case "success":
+      return "#16a34a";
+    case "warning":
+      return "#f97316";
+    case "error":
+      return "#dc2626";
+
+    default:
+      return "#d1d5db";
   }
 }

@@ -251,9 +251,9 @@ async fn list_files(
     let sort = query.to_query_sort(&crate::enums::model_enums::Models::Files);
     let stmt = format!(
         "
-        SELECT id, created_at, title, type, size, is_public
+        SELECT id, created_at, title, type, size, is_public, path
         FROM files 
-        WHERE path LIKE $1
+        WHERE path = $1
         {sort}
         LIMIT 25
         OFFSET 0;",
@@ -261,7 +261,7 @@ async fn list_files(
     );
 
     let rows = conn
-        .query(&stmt, &[&format!("%{}", &query.path)])
+        .query(&stmt, &[&query.path])
         .await
         .map_err(|err| AppError::db_error(err))?;
 

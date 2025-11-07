@@ -14,6 +14,7 @@ import {
   getFileSize,
   getIconColor,
   isAudio,
+  isCode,
   isImage,
   isPreviewable,
   isText,
@@ -53,7 +54,12 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
           <Button
             isDisabled={!isPreviewable(type)}
             onClick={async () => {
-              if (isText(type) || isVideo(type) || type === "pdf") {
+              if (
+                isText(type) ||
+                isCode(type) ||
+                isVideo(type) ||
+                type === "pdf"
+              ) {
                 const res = await fetchFunction<string>({
                   model: "files",
                   id,
@@ -163,14 +169,14 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
       <div
         className={`flex items-center justify-center flex-col ${preview ? "opacity-100 h-30 pointer-events-auto" : "opacity-0 h-0 pointer-events-none"} transition-[opacity,height] duration-300`}
       >
-        {isImage(type) ? (
+        {isImage(type) && preview ? (
           <img
             className={`object-contain w-full h-full ${preview ? "opacity-100" : "opacity-0"}`}
             src={preview}
             alt={title}
           />
         ) : null}
-        {isAudio(type) ? (
+        {isAudio(type) && preview ? (
           <audio ref={audioRef} autoPlay={!!preview} controls src={preview} />
         ) : null}
       </div>

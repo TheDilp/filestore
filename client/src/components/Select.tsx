@@ -20,7 +20,7 @@ import { Icons } from "../enums";
 import type { BaseFormComponent, BaseFormEntryComponent } from "../types";
 type Props = BaseFormComponent &
   BaseFormEntryComponent & {
-    options: { id: string; label: string; value: string | number }[];
+    options: { id: string; label: string; value: string | number | null }[];
   };
 
 const classes = tv({

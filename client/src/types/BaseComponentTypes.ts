@@ -17,7 +17,7 @@ export type BaseFormComponent = {
   size?: Size;
 };
 
-export type BaseFormEntryComponent<T = string | number> = {
+export type BaseFormEntryComponent<T = string | number | null> = {
   name: string;
   onChange: (e: { name: string; value: T }) => void;
   isDisabled?: boolean;

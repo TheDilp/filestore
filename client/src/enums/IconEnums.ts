@@ -20,6 +20,7 @@ export const Icons = {
   download: "material-symbols:download" as const,
   exe: "bi:filetype-exe" as const,
   expand: "ci:expand" as const,
+  folder: "material-symbols-light:folder-outline" as const,
   grid: "cuida:grid-outline" as const,
   gif: "bi:filetype-gif" as const,
   heic: "bi:filetype-heic" as const,

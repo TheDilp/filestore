@@ -27,6 +27,12 @@ const codeTypes = new Set([
 ]);
 
 const previewableTypes = new Set([
+  "png",
+  "jpg",
+  "jpeg",
+  "webp",
+  "gif",
+  "svg",
   "mp4",
   "webm",
   "ogg",

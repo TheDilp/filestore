@@ -53,6 +53,7 @@ const FileTypesSchema = enum_([
   "otf",
   "woff",
   "exe",
+  "folder",
   "other",
 ]);
 

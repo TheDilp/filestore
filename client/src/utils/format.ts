@@ -142,3 +142,20 @@ export function variantToHex(variant: Variant): string {
       return "#d1d5db";
   }
 }
+
+export function groupBy<T, K extends keyof T>(
+  items: T[],
+  field: K
+): Record<string, T[]> {
+  return items.reduce<Record<string, T[]>>(
+    (prev, curr) => {
+      if (!curr?.[field]) return prev;
+      const p = String(curr[field]);
+      if (p && prev?.[p]) prev[p].push(curr);
+      else if (p && !prev?.[p]) prev[p] = [curr];
+
+      return prev;
+    },
+    {} as Record<string, T[]>
+  );
+}

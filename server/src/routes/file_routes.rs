@@ -48,6 +48,16 @@ struct FileQuery {
     is_folder: bool,
 }
 
+impl FileQuery {
+    fn format_path(&self) -> String {
+        if self.path.is_empty() {
+            String::from("")
+        } else {
+            format!("{}/", self.path)
+        }
+    }
+}
+
 #[derive(Deserialize)]
 struct InsertFolder {
     title: String,
@@ -83,7 +93,7 @@ async fn upload_file_route(
         debug!("ENTERED WHILE LOOP FOR FIELDS");
 
         let file_id = Uuid::new_v4();
-        let file_path = format!("{}{}", &query.path, &file_id);
+        let file_path = format!("{}{}", &query.format_path(), &file_id);
         tracing::warn!("{}", file_path);
         debug!("BEGIN FILE UPLOAD");
         let upload_result = upload_file(&state, field, &file_path, &query.is_public).await;
@@ -177,7 +187,7 @@ async fn download_file(
         .s3_client
         .get_object()
         .bucket(&state.s3_name)
-        .key(format!("{}{}", &query.path, id))
+        .key(format!("{}{}", &query.format_path(), id))
         .send()
         .await
         .map_err(|err| AppError::s3_error(err))?;
@@ -248,7 +258,13 @@ async fn list_files(
     Query(query): Query<QueryParams>,
 ) -> RouteResponse<Value> {
     let conn = state.get_db_conn().await?;
-    let sort = query.to_query_sort(&crate::enums::model_enums::Models::Files);
+    let query_sort = query.to_query_sort(&crate::enums::model_enums::Models::Files);
+
+    let sort = match query_sort.is_empty() {
+        true => "ORDER BY type = 'folder' desc",
+        false => &query_sort.replace("ORDER BY", "ORDER BY type = 'folder' desc, "),
+    };
+
     let stmt = format!(
         "
         SELECT id, created_at, title, type, size, is_public, path
@@ -287,7 +303,7 @@ async fn delete_file(
     .await
     .map_err(|err| AppError::db_error(err))?;
 
-    let key = format!("{}{}", &query.path, id);
+    let key = format!("{}{}", &query.format_path(), id);
     state
         .s3_client
         .delete_object()

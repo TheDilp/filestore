@@ -27,21 +27,9 @@ const codeTypes = new Set([
 ]);
 
 const previewableTypes = new Set([
-  "png",
-  "jpg",
-  "jpeg",
-  "webp",
-  "gif",
-  "svg",
-  "mp3",
-  "wav",
-  "ogg",
-  "aac",
-  "m4p",
   "mp4",
   "webm",
   "ogg",
-  "pdf",
   "txt",
   "csv",
   "json",
@@ -50,7 +38,23 @@ const previewableTypes = new Set([
   "mdx",
   "html",
   "yml",
+  "yaml",
   "sql",
+  "js",
+  "jsx",
+  "tsx",
+  "ts",
+  "css",
+  "scss",
+  "sass",
+  "py",
+  "rb",
+  "php",
+  "sh",
+  "java",
+  "cs",
+  "rs",
+  "pdf",
 ]);
 
 export function isImage(type: string): boolean {
@@ -72,4 +76,34 @@ export function isPreviewable(type: string): boolean {
 }
 export function isCode(type: string): boolean {
   return codeTypes.has(type.toLowerCase());
+}
+
+const codeLanguageMap: Record<string, string> = {
+  js: "javascript",
+  jsx: "javascript",
+  ts: "typescript",
+  tsx: "typescript",
+  py: "python",
+  rb: "ruby",
+  php: "php",
+  sh: "bash",
+  java: "java",
+  cs: "csharp",
+  html: "xml", //* highlight.js uses xml for HTML
+  css: "css",
+  scss: "scss",
+  sass: "scss",
+  yml: "yaml",
+  yaml: "yaml",
+  sql: "sql",
+  json: "json",
+  xml: "xml",
+  md: "markdown",
+  mdx: "markdown",
+  dockerfile: "dockerfile",
+  rs: "rust",
+};
+
+export function getHighlightLang(ext: string): string {
+  return codeLanguageMap[ext.toLowerCase()] || "plaintext";
 }

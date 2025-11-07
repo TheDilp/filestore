@@ -22,6 +22,7 @@ use crate::{
     enums::{errors::AppError, file_enums::FileTypes, storage_enums::S3Providers},
     models::{
         auth::AuthSession,
+        request::QueryParams,
         response::{AppErrorResponse, AppResponse, RouteResponse},
         state::AppState,
     },
@@ -206,19 +207,23 @@ async fn generate_link(
 
 async fn list_files(
     State(state): State<AppState>,
-    Query(query): Query<FileQuery>,
+    Query(query): Query<QueryParams>,
 ) -> RouteResponse<Value> {
     let conn = state.get_db_conn().await?;
-
-    let stmt = "
-    SELECT id, created_at, title, type, size, is_public
-    FROM files 
-    WHERE path LIKE $1
-    LIMIT 25
-    OFFSET 0;";
+    let sort = query.to_query_sort(&crate::enums::model_enums::Models::Files);
+    let stmt = format!(
+        "
+        SELECT id, created_at, title, type, size, is_public
+        FROM files 
+        WHERE path LIKE $1
+        {sort}
+        LIMIT 25
+        OFFSET 0;",
+        sort = sort
+    );
 
     let rows = conn
-        .query(stmt, &[&format!("%{}", &query.path)])
+        .query(&stmt, &[&format!("%{}", &query.path)])
         .await
         .map_err(|err| AppError::db_error(err))?;
 

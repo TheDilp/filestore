@@ -2,7 +2,14 @@ import { createLazyRoute, useParams } from "@tanstack/react-router";
 import { Fragment, useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
-import { Button, FileCard, FileRow, Input, Select } from "../components";
+import {
+  Breadcrumbs,
+  Button,
+  FileCard,
+  FileRow,
+  Input,
+  Select,
+} from "../components";
 import { Icons } from "../enums";
 import { useList } from "../hooks";
 import { FileSchema } from "../schemas";
@@ -22,7 +29,7 @@ const groupOptions: {
   { id: "none", label: "None", value: null },
 ];
 
-async function createFolder(title: string, refetch: () => void) {
+async function createFolder(title: string, path: string, refetch: () => void) {
   const res = await fetchFunction({
     model: "files",
     action: "create",
@@ -30,7 +37,7 @@ async function createFolder(title: string, refetch: () => void) {
     method: "POST",
     urlSuffix: "folder",
     searchParams: [
-      ["path", ""],
+      ["path", path],
       ["is_public", true],
     ],
   });
@@ -90,6 +97,11 @@ function FileBrowser() {
       refetch();
     }
   }
+  const crumbs = (params.path || "")
+    .split("/")
+    .filter(Boolean)
+    .map((crumb) => ({ id: crumb, title: crumb, path: crumb }));
+
   const grouped = groupedBy ? groupBy(data, groupedBy) : null;
   return (
     <div className="w-full mx-auto h-full flex flex-col gap-y-4 overflow-hidden">
@@ -97,7 +109,7 @@ function FileBrowser() {
         <h1 className="text-3xl font-bold">Filestore</h1>
       </div>
       <div className="w-full px-6 flex flex-col gap-y-10 mx-auto flex-1 max-h-[calc(100%-120px)]">
-        <div className="rounded-md border border-secondary w-full p-4 flex items-center flex-nowrap gap-x-4">
+        <div className="rounded-md border border-secondary w-full p-4 flex items-center flex-nowrap gap-x-2">
           <div className="h-10 grow">
             <Input
               ref={ref}
@@ -131,12 +143,15 @@ function FileBrowser() {
               icon={Icons.folder}
               onClick={() => {
                 const title = prompt("Enter folder name");
-                if (title) createFolder(title, refetch);
+                if (title) createFolder(title, params.path || "", refetch);
               }}
             />
           </div>
         </div>
-        <hr className="border-secondary" />
+        <div>
+          <Breadcrumbs items={crumbs} />
+          <hr className="border-secondary" />
+        </div>
         <div className="flex items-center justify-between max-sm:gap-y-8 max-sm:flex-col">
           <h2 className="text-2xl font-semibold max-sm:hidden">Your Files</h2>
           <div className="flex items-end gap-x-2">

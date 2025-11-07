@@ -1,4 +1,5 @@
 export * from "./AuthLayout";
+export * from "./Breadcrumbs";
 export * from "./Button";
 export * from "./Drawer";
 export * from "./Dropdown";

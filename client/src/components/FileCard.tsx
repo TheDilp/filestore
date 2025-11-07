@@ -37,11 +37,12 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const openPreviewDrawer = useSetAtom(drawerAtom);
   const queryClient = useQueryClient();
+
   return (
     <Link
       disabled={type !== "folder"}
       to="/browser/{-$path}"
-      params={{ path: title }}
+      params={{ path: `${params.path ? `${params.path}/` : ""}${title}` }}
     >
       <div
         className={`border border-secondary p-4 rounded-md hover:shadow group ${preview ? "h-56" : "h-28"} transition-[shadow,height] duration-300 ease-in-out`}

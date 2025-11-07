@@ -103,6 +103,7 @@ export function getIconColor(type: zodInfer<typeof FileSchema>["type"]) {
     case "java":
     case "cs":
     case "html":
+    case "folder":
       return "#FDD835";
 
     case "ttf":

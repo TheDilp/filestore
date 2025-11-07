@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useSetAtom } from "jotai";
 import { useRef, useState } from "react";
@@ -35,6 +36,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
   const createNotification = useCreateNotification();
   const audioRef = useRef<HTMLAudioElement>(null);
   const openPreviewDrawer = useSetAtom(drawerAtom);
+  const queryClient = useQueryClient();
   return (
     <div
       className={`border border-secondary p-4 rounded-md hover:shadow group ${preview ? "h-56" : "h-28"} transition-[shadow,height] duration-300 ease-in-out`}
@@ -119,6 +121,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
         </div>
         <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
           <Dropdown
+            allowedPlacements={["left", "right"]}
             items={[
               {
                 id: "download",
@@ -147,7 +150,15 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
                 id: "delete",
                 title: "Delete",
                 icon: Icons.delete,
-                onClick: () => {},
+                onClick: async () => {
+                  await fetchFunction({
+                    model: "files",
+                    action: "delete",
+                    method: "DELETE",
+                    id,
+                  });
+                  queryClient.invalidateQueries({ queryKey: ["files"] });
+                },
                 iconColor: "red",
               },
             ]}

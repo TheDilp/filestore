@@ -131,7 +131,7 @@ export function Select({
         {...getReferenceProps()}
         tabIndex={0}
       >
-        <span>{selectedLabel || "Select"}</span>
+        <span className="font-medium">{selectedLabel || "Select"}</span>
         <Icon icon={Icons.arrowDown} fontSize={24} color="#a1a1aa" />
       </div>
       {isOpen ? (
@@ -154,7 +154,7 @@ export function Select({
                     listRef.current[i] = node;
                   }}
                   role="option"
-                  className={`border-t-secondary cursor-pointer overflow-hidden font-medium border-t p-2 outline-0 transition-colors first:rounded-t-md first:border-t-0 last:rounded-b-md ${i === activeIndex || item?.value === value ? "bg-info-highlight/20 text-info" : "text-black"}`}
+                  className={`border-t-secondary cursor-pointer overflow-hidden border-t p-2 outline-0 transition-colors first:rounded-t-md first:border-t-0 last:rounded-b-md ${i === activeIndex || item?.value === value ? "bg-info-highlight/20 text-info" : "text-black"}`}
                   tabIndex={i === activeIndex ? 0 : -1}
                   aria-selected={value === item?.value && i === activeIndex}
                   {...getItemProps({

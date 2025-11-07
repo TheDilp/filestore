@@ -6,6 +6,26 @@ const videoTypes = new Set(["mp4", "webm", "ogg", "mov", "avi"]);
 
 const textTypes = new Set(["txt", "csv", "json", "xml", "md"]);
 
+const codeTypes = new Set([
+  "js",
+  "jsx",
+  "tsx",
+  "ts",
+  "css",
+  "scss",
+  "sass",
+  "py",
+  "rb",
+  "php",
+  "sh",
+  "java",
+  "cs",
+  "html",
+  "sql",
+  "yml",
+  "xml",
+]);
+
 const previewableTypes = new Set([
   "png",
   "jpg",
@@ -49,4 +69,7 @@ export function isText(type: string): boolean {
 }
 export function isPreviewable(type: string): boolean {
   return previewableTypes.has(type.toLowerCase());
+}
+export function isCode(type: string): boolean {
+  return codeTypes.has(type.toLowerCase());
 }

@@ -268,7 +268,7 @@ pub fn file_routes() -> Router<AppState> {
                 .route("/read/{id}/link", get(generate_link))
                 .route("/download/{id}", get(download_file))
                 .route("/list", get(list_files))
-                .route("/{id}", delete(delete_file)),
+                .route("/delete/{id}", delete(delete_file)),
         )
         .layer(DefaultBodyLimit::max(*MAX_FILE_SIZE))
 }

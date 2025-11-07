@@ -22,6 +22,21 @@ const groupOptions: {
   { id: "none", label: "None", value: null },
 ];
 
+async function createFolder(title: string, refetch: () => void) {
+  const res = await fetchFunction({
+    model: "files",
+    action: "create",
+    body: JSON.stringify({ title }),
+    method: "POST",
+    urlSuffix: "folder",
+    searchParams: [
+      ["path", ""],
+      ["is_public", true],
+    ],
+  });
+  if (res.ok) refetch();
+}
+
 function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -53,6 +68,7 @@ function FileBrowser() {
       searchParams: [
         ["path", ""],
         ["is_public", true],
+        ["is_folder", true],
       ],
     });
     if (res.ok && ref.current) {
@@ -93,6 +109,16 @@ function FileBrowser() {
               title="Upload"
               variant="primary"
               icon={Icons.upload}
+            />
+          </div>
+          <div className="">
+            <Button
+              title="New folder"
+              icon={Icons.folder}
+              onClick={() => {
+                const title = prompt("Enter folder name");
+                if (title) createFolder(title, refetch);
+              }}
             />
           </div>
         </div>

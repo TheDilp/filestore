@@ -2,7 +2,7 @@ use std::{str::FromStr, time::Duration};
 
 use aws_sdk_s3::presigning::PresigningConfig;
 use axum::{
-    Extension, Router,
+    Extension, Json, Router,
     body::Body,
     extract::{DefaultBodyLimit, Multipart, Path, Query, State},
     http::Response,
@@ -44,6 +44,13 @@ struct FileQuery {
     path: String,
     #[serde(default = "default_public")]
     is_public: bool,
+    #[serde(default = "default_public")]
+    is_folder: bool,
+}
+
+#[derive(Deserialize)]
+struct InsertFolder {
+    title: String,
 }
 
 async fn upload_file_route(
@@ -59,11 +66,15 @@ async fn upload_file_route(
         .map_err(|err| AppError::db_error(err))?;
 
     let statement = tx
-        .prepare("INSERT INTO files (id, title, owner_id, size, type, path, is_public) VALUES ($1, $2, $3, $4, $5, $6, $7);")
+        .prepare(
+            "INSERT INTO files (id, title, owner_id, size, type, path, is_public)
+        VALUES ($1, $2, $3, $4, $5, $6, $7);",
+        )
         .await
         .map_err(|err| AppError::db_error(err))?;
 
     debug!("WHILE LOOP FOR FIELDS");
+
     while let Some(field) = payload
         .next_field()
         .await
@@ -115,6 +126,33 @@ async fn upload_file_route(
 
     tx.commit().await.map_err(|err| AppError::db_error(err))?;
     Ok(AppResponse::default_response(vec![]))
+}
+
+async fn create_folder_route(
+    State(state): State<AppState>,
+    Extension(session): Extension<AuthSession>,
+    Query(query): Query<FileQuery>,
+    Json(payload): Json<InsertFolder>,
+) -> RouteResponse<Uuid> {
+    let conn = state.get_db_conn().await?;
+
+    let statement = "INSERT INTO files (id, title, owner_id, size, type, path, is_public)
+        VALUES ($1, $2, $3, 0, 'folder', $4, $5);";
+    let folder_id = Uuid::new_v4();
+    let _ = conn
+        .execute(
+            statement,
+            &[
+                &folder_id,
+                &payload.title,
+                &session.user.id,
+                &query.path,
+                &query.is_public,
+            ],
+        )
+        .await
+        .map_err(|err| AppError::db_error(err));
+    Ok(AppResponse::default_response(folder_id))
 }
 
 async fn download_file(
@@ -269,6 +307,7 @@ pub fn file_routes() -> Router<AppState> {
         .nest(
             "/files",
             Router::new()
+                .route("/create/folder", post(create_folder_route))
                 .route("/upload", post(upload_file_route))
                 .route("/read/{id}/link", get(generate_link))
                 .route("/download/{id}", get(download_file))

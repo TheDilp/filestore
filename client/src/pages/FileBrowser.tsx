@@ -19,7 +19,6 @@ const groupOptions: {
   value: "title" | "type" | null;
 }[] = [
   { id: "type", label: "Type", value: "type" },
-  { id: "title", label: "Title", value: "title" },
   { id: "none", label: "None", value: null },
 ];
 
@@ -30,7 +29,7 @@ function FileBrowser() {
     field: keyof zodInfer<typeof FileSchema>;
     type: "asc" | "desc";
   }>({ field: "createdAt", type: "asc" });
-  const [groupedBy, setGroupedBy] = useState<"title" | "type" | null>(null);
+  const [groupedBy, setGroupedBy] = useState<"type" | null>(null);
   const ref = useRef<HTMLInputElement>(null);
 
   const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>({
@@ -120,7 +119,7 @@ function FileBrowser() {
               <Select
                 options={groupOptions}
                 onChange={(e) => {
-                  setGroupedBy(e.value as "title" | "type");
+                  setGroupedBy(e.value as "type" | null);
                 }}
                 name="group"
                 title="Group"

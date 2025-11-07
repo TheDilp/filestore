@@ -1,5 +1,6 @@
 export * from "./AuthLayout";
 export * from "./Button";
+export * from "./Drawer";
 export * from "./Dropdown";
 export * from "./FileCard";
 export * from "./FileRow";

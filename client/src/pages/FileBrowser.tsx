@@ -1,12 +1,12 @@
 import { createLazyRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
 import { Button, FileCard, FileRow, Input, Select } from "../components";
 import { Icons } from "../enums";
 import { useList } from "../hooks";
 import { FileSchema } from "../schemas";
-import { fetchFunction } from "../utils";
+import { fetchFunction, groupBy } from "../utils";
 const sortOptions = [
   { id: "size", label: "Size", value: "size" },
   { id: "title", label: "Title", value: "title" },
@@ -16,10 +16,11 @@ const sortOptions = [
 const groupOptions: {
   id: string;
   label: string;
-  value: keyof zodInfer<typeof FileSchema>;
+  value: "title" | "type" | null;
 }[] = [
   { id: "type", label: "Type", value: "type" },
   { id: "title", label: "Title", value: "title" },
+  { id: "none", label: "None", value: null },
 ];
 
 function FileBrowser() {
@@ -29,7 +30,7 @@ function FileBrowser() {
     field: keyof zodInfer<typeof FileSchema>;
     type: "asc" | "desc";
   }>({ field: "createdAt", type: "asc" });
-
+  const [groupedBy, setGroupedBy] = useState<"title" | "type" | null>(null);
   const ref = useRef<HTMLInputElement>(null);
 
   const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>({
@@ -60,7 +61,7 @@ function FileBrowser() {
       refetch();
     }
   }
-
+  const grouped = groupedBy ? groupBy(data, groupedBy) : null;
   return (
     <div className="w-full mx-auto h-full flex flex-col gap-y-4 overflow-hidden">
       <div className="w-full h-14 flex items-center justify-center">
@@ -118,10 +119,12 @@ function FileBrowser() {
             <div className="w-30">
               <Select
                 options={groupOptions}
-                onChange={() => {}}
+                onChange={(e) => {
+                  setGroupedBy(e.value as "title" | "type");
+                }}
                 name="group"
                 title="Group"
-                value=""
+                value={groupedBy}
                 variant="secondary"
               />
             </div>
@@ -151,16 +154,42 @@ function FileBrowser() {
         </div>
         {view === "grid" ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto overflow-x-hidden grow content-start">
-            {data.map((item) => (
-              <FileCard
-                key={item.id}
-                id={item.id}
-                title={item.title}
-                createdAt={item.createdAt}
-                type={item.type}
-                size={item.size}
-              />
-            ))}
+            {grouped
+              ? Object.entries(grouped)
+                  .sort((a, b) => {
+                    if (a[0] > b[0]) return 1;
+                    if (a[0] < b[0]) return -1;
+                    return 0;
+                  })
+                  .map(([key, value]) => {
+                    return (
+                      <Fragment key={key}>
+                        <h3 className="border-b border-secondary text-xl uppercase col-span-full">
+                          {key}
+                        </h3>
+                        {value.map((item) => (
+                          <FileCard
+                            key={item.id}
+                            id={item.id}
+                            title={item.title}
+                            createdAt={item.createdAt}
+                            type={item.type}
+                            size={item.size}
+                          />
+                        ))}
+                      </Fragment>
+                    );
+                  })
+              : data.map((item) => (
+                  <FileCard
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    createdAt={item.createdAt}
+                    type={item.type}
+                    size={item.size}
+                  />
+                ))}
           </div>
         ) : (
           <div className="flex flex-col divide-y divide-secondary overflow-y-auto">

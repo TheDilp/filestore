@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use aws_sdk_s3::primitives::ByteStream;
 use axum::extract::multipart::Field;
 
@@ -30,6 +28,7 @@ pub async fn upload_file(
     }
 
     let content_type = stream.content_type();
+
     let name = stream.file_name().unwrap_or("unnamed").to_string();
     if name == "unnamed" {
         tracing::error!("Unnamed file SKIPPING - {}", file_path);
@@ -54,11 +53,7 @@ pub async fn upload_file(
         .await;
 
     if upload.is_ok() {
-        Ok((
-            name,
-            FileTypes::from_str(content_type.as_str()).unwrap_or(FileTypes::Other(content_type)),
-            size,
-        ))
+        Ok((name, FileTypes::from_mime(content_type.as_str()), size))
     } else {
         tracing::error!("ERROR UPLOADING FILE - {}", upload.err().unwrap());
         Err(false)

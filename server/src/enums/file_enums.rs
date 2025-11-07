@@ -120,6 +120,64 @@ impl FileTypes {
             FileTypes::Other(_) => "application/octet-stream",
         }
     }
+
+    pub fn from_mime(value: &str) -> Self {
+        match value {
+            "image/png" => FileTypes::Png,
+            "image/jpeg" => FileTypes::Jpg,
+            "image/webp" => FileTypes::Webp,
+            "image/gif" => FileTypes::Gif,
+            "image/svg+xml" => FileTypes::Svg,
+            "application/pdf" => FileTypes::Pdf,
+            "application/msword" => FileTypes::Doc,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => {
+                FileTypes::Docx
+            }
+            "text/plain" => FileTypes::Txt,
+            "application/vnd.ms-excel" => FileTypes::Xls,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => FileTypes::Xlsx,
+            "audio/mpeg" => FileTypes::Mp3,
+            "audio/wav" => FileTypes::Wav,
+            "audio/ogg" => FileTypes::Ogg,
+            "video/mp4" => FileTypes::Mp4,
+            "video/quicktime" => FileTypes::Mov,
+            "video/x-msvideo" => FileTypes::Avi,
+            "video/webm" => FileTypes::Webm,
+            "application/zip" => FileTypes::Zip,
+            "application/vnd.rar" => FileTypes::Rar,
+            "application/json" => FileTypes::Json,
+            "text/csv" => FileTypes::Csv,
+            "text/markdown" => FileTypes::Md,
+            "application/xml" => FileTypes::Xml,
+            "application/x-yaml" => FileTypes::Yml,
+            "application/sql" => FileTypes::Sql,
+            "image/bmp" => FileTypes::Bmp,
+            "image/heic" => FileTypes::Heic,
+            "image/x-raw" => FileTypes::Raw,
+            "image/tiff" => FileTypes::Tiff,
+            "image/vnd.adobe.photoshop" => FileTypes::Psd,
+            "audio/aac" => FileTypes::Aac,
+            "audio/mp4" => FileTypes::M4p,
+            "application/javascript" => FileTypes::Js,
+            "text/jsx" => FileTypes::Jsx,
+            "text/tsx" => FileTypes::Tsx,
+            "text/css" => FileTypes::Css,
+            "text/x-scss" => FileTypes::Scss,
+            "text/x-sass" => FileTypes::Sass,
+            "text/x-python" => FileTypes::Py,
+            "text/x-ruby" => FileTypes::Rb,
+            "application/x-httpd-php" => FileTypes::Php,
+            "application/x-sh" => FileTypes::Sh,
+            "text/x-java-source" => FileTypes::Java,
+            "text/x-csharp" => FileTypes::Cs,
+            "text/html" => FileTypes::Html,
+            "font/ttf" => FileTypes::Ttf,
+            "font/otf" => FileTypes::Otf,
+            "font/woff" => FileTypes::Woff,
+            "application/vnd.microsoft.portable-executable" => FileTypes::Exe,
+            _ => FileTypes::Other(value.to_string()),
+        }
+    }
 }
 
 impl<'a> FromSql<'a> for FileTypes {

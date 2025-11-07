@@ -6,10 +6,12 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai";
 import { useResetAtom } from "jotai/utils";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { dracula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 import { drawerAtom } from "../atoms";
 import { Icons } from "../enums";
-import { isText, isVideo } from "../utils";
+import { getHighlightLang, isCode, isText, isVideo } from "../utils";
 import { Button } from "./Button";
 
 export function Drawer() {
@@ -45,7 +47,7 @@ export function Drawer() {
       if (!drawer?.data.url) return;
       const res = await fetch(drawer.data.url, { method: "GET" });
 
-      if (isText(drawer.type)) {
+      if (isText(drawer.type) || isCode(drawer.type)) {
         const text = await res.text();
         return text;
       }
@@ -85,15 +87,18 @@ export function Drawer() {
               src={drawer.data.url}
             />
           ) : null}
-          {data && drawer?.type === "json" ? (
-            <pre>
-              <code>{data}</code>
-            </pre>
+          {data && drawer?.type && isCode(drawer?.type) ? (
+            <SyntaxHighlighter
+              language={getHighlightLang(drawer?.type)}
+              style={dracula}
+            >
+              {data}
+            </SyntaxHighlighter>
           ) : null}
           {data &&
           drawer?.type &&
           isText(drawer?.type) &&
-          drawer?.type !== "json" ? (
+          !isCode(drawer?.type) ? (
             <p className="text-lg">{data}</p>
           ) : null}
           {drawer?.type && isVideo(drawer?.type) ? (

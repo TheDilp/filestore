@@ -1,4 +1,4 @@
-import { createLazyRoute } from "@tanstack/react-router";
+import { createLazyRoute, useParams } from "@tanstack/react-router";
 import { Fragment, useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
@@ -37,6 +37,14 @@ async function createFolder(title: string, refetch: () => void) {
   if (res.ok) refetch();
 }
 
+const fields: (keyof zodInfer<typeof FileSchema>)[] = [
+  "id",
+  "title",
+  "type",
+  "size",
+  "createdAt",
+];
+const fieldString = fields.join("");
 function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -46,12 +54,18 @@ function FileBrowser() {
   }>({ field: "createdAt", type: "asc" });
   const [groupedBy, setGroupedBy] = useState<"type" | null>(null);
   const ref = useRef<HTMLInputElement>(null);
-
-  const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>({
-    model: "files",
-    fields: ["id", "title"],
-    sort,
-  });
+  const params = useParams({ from: "/browser/{-$path}" });
+  const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>(
+    {
+      queryKey: ["files", fieldString, sort.field, params?.path || ""],
+      model: "files",
+      fields,
+      sort,
+    },
+    {
+      searchParams: [["path", params?.path || ""]],
+    }
+  );
 
   async function uploadFiles() {
     if (!files) return;
@@ -66,7 +80,7 @@ function FileBrowser() {
       body: formData,
       method: "POST",
       searchParams: [
-        ["path", ""],
+        ["path", params?.path || ""],
         ["is_public", true],
         ["is_folder", true],
       ],

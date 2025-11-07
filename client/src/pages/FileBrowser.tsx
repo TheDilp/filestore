@@ -13,7 +13,11 @@ const sortOptions = [
   { id: "type", label: "Type", value: "type" },
   { id: "created_at", label: "Uploaded at", value: "created_at" },
 ];
-const groupOptions = [
+const groupOptions: {
+  id: string;
+  label: string;
+  value: keyof zodInfer<typeof FileSchema>;
+}[] = [
   { id: "type", label: "Type", value: "type" },
   { id: "title", label: "Title", value: "title" },
 ];
@@ -21,12 +25,17 @@ const groupOptions = [
 function FileBrowser() {
   const [files, setFiles] = useState<FileList>();
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [sort, setSort] = useState<{
+    field: keyof zodInfer<typeof FileSchema>;
+    type: "asc" | "desc";
+  }>({ field: "createdAt", type: "asc" });
 
   const ref = useRef<HTMLInputElement>(null);
 
   const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>({
     model: "files",
     fields: ["id", "title"],
+    sort,
   });
 
   async function uploadFiles() {
@@ -94,9 +103,14 @@ function FileBrowser() {
             <div className="w-46">
               <Select
                 options={sortOptions}
-                onChange={() => {}}
+                onChange={(e) => {
+                  setSort({
+                    field: e.value as keyof zodInfer<typeof FileSchema>,
+                    type: "asc",
+                  });
+                }}
                 name="sort"
-                value=""
+                value={sort.field}
                 title="Sort"
                 variant="secondary"
               />

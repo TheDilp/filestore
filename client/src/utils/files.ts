@@ -9,6 +9,7 @@ const textTypes = new Set(["txt", "csv", "json", "xml", "md"]);
 const codeTypes = new Set([
   "js",
   "jsx",
+  "json",
   "tsx",
   "ts",
   "css",

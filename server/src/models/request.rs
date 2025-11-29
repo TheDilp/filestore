@@ -149,14 +149,6 @@ impl QueryParams {
     }
     pub fn filter_conditions(&self) -> Option<Conditions> {
         if let Some(filters) = &self.filters {
-            println!("{}", filters);
-            println!("{}", filters);
-            println!("{}", filters);
-            println!("{}", filters);
-            println!("{}", filters);
-            println!("{}", filters);
-            println!("{}", filters);
-            println!("{}", filters);
             let conditions = serde_json::from_str::<Conditions>(filters);
             if conditions.is_err() {
                 tracing::error!(

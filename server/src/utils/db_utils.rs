@@ -73,6 +73,7 @@ impl<'a> WhereBuilder<'a> {
                         }
                         format!("${}", self.counter)
                     }
+
                     _ => format!("${}", self.counter),
                 };
 
@@ -98,10 +99,9 @@ impl<'a> WhereBuilder<'a> {
                     FilterOperators::NotIn => {
                         format!("ALL(${})", self.counter)
                     }
-
                     FilterOperators::Is | FilterOperators::IsNot => {
                         if condition.value.is_null() {
-                            final_and_conditions.push(format!(
+                            final_or_conditions.push(format!(
                                 "({}.{} {} NULL)",
                                 self.model,
                                 condition.field.to_case(convert_case::Case::Snake),

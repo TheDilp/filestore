@@ -78,7 +78,7 @@ async fn upload_file_route(
     let statement = tx
         .prepare(
             "INSERT INTO files (id, title, owner_id, size, type, path, is_public)
-        VALUES ($1, $2, $3, $4, $5, $6, $7);",
+        VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (path, title, owner_id) DO NOTHING;",
         )
         .await
         .map_err(|err| AppError::db_error(err))?;
@@ -93,8 +93,11 @@ async fn upload_file_route(
         debug!("ENTERED WHILE LOOP FOR FIELDS");
 
         let file_id = Uuid::new_v4();
-        let file_path = format!("{}{}", &query.format_path(), &file_id);
-        tracing::warn!("{}", file_path);
+        let string_id = &file_id.to_string();
+        let title = field.file_name().unwrap_or(string_id);
+
+        let file_path = format!("{}{}", &query.format_path(), &title);
+
         debug!("BEGIN FILE UPLOAD");
         let upload_result = upload_file(&state, field, &file_path, &query.is_public).await;
         debug!("END FILE UPLOAD");
@@ -217,10 +220,11 @@ async fn generate_link(
     let conn = state.get_db_conn().await?;
 
     let row = conn
-        .query_one("SELECT path FROM files WHERE id = $1;", &[&id])
+        .query_one("SELECT title, path FROM files WHERE id = $1;", &[&id])
         .await
         .map_err(|err| AppError::db_error(err))?;
     let path: Option<String> = row.get("path");
+    let title: String = row.get("title");
 
     let provider =
         S3Providers::from_str(&state.s3_provider).map_err(|err| AppError::critical_error(err))?;
@@ -235,7 +239,7 @@ async fn generate_link(
                     false => format!("{}/", p),
                 })
                 .unwrap_or_default(),
-            id = id
+            id = title
         ),
         S3Providers::AWS => {
             let p = state

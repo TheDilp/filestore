@@ -30,9 +30,9 @@ const groupOptions: {
   label: string;
   value: "title" | "type" | null;
 }[] = [
-  { id: "type", label: "Type", value: "type" },
-  { id: "none", label: "None", value: null },
-];
+    { id: "type", label: "Type", value: "type" },
+    { id: "none", label: "None", value: null },
+  ];
 
 async function createFolder(title: string, path: string, refetch: () => void) {
   const res = await fetchFunction({
@@ -83,15 +83,15 @@ function FileBrowser() {
       model: "files",
       filters: debouncedSearch
         ? {
-            and: [
-              {
-                id: "search",
-                field: "title",
-                value: debouncedSearch,
-                operator: "ilike",
-              },
-            ],
-          }
+          and: [
+            {
+              id: "search",
+              field: "title",
+              value: `%${debouncedSearch}%`,
+              operator: "ilike",
+            },
+          ],
+        }
         : undefined,
       fields,
       sort,
@@ -253,40 +253,40 @@ function FileBrowser() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto overflow-x-hidden grow content-start">
             {grouped
               ? Object.entries(grouped)
-                  .sort((a, b) => {
-                    if (a[0] > b[0]) return 1;
-                    if (a[0] < b[0]) return -1;
-                    return 0;
-                  })
-                  .map(([key, value]) => {
-                    return (
-                      <Fragment key={key}>
-                        <h3 className="border-b border-secondary text-xl uppercase col-span-full">
-                          {key}
-                        </h3>
-                        {value.map((item) => (
-                          <FileCard
-                            key={item.id}
-                            id={item.id}
-                            title={item.title}
-                            createdAt={item.createdAt}
-                            type={item.type}
-                            size={item.size}
-                          />
-                        ))}
-                      </Fragment>
-                    );
-                  })
+                .sort((a, b) => {
+                  if (a[0] > b[0]) return 1;
+                  if (a[0] < b[0]) return -1;
+                  return 0;
+                })
+                .map(([key, value]) => {
+                  return (
+                    <Fragment key={key}>
+                      <h3 className="border-b border-secondary text-xl uppercase col-span-full">
+                        {key}
+                      </h3>
+                      {value.map((item) => (
+                        <FileCard
+                          key={item.id}
+                          id={item.id}
+                          title={item.title}
+                          createdAt={item.createdAt}
+                          type={item.type}
+                          size={item.size}
+                        />
+                      ))}
+                    </Fragment>
+                  );
+                })
               : data.map((item) => (
-                  <FileCard
-                    key={item.id}
-                    id={item.id}
-                    title={item.title}
-                    createdAt={item.createdAt}
-                    type={item.type}
-                    size={item.size}
-                  />
-                ))}
+                <FileCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  createdAt={item.createdAt}
+                  type={item.type}
+                  size={item.size}
+                />
+              ))}
           </div>
         ) : (
           <div
@@ -294,42 +294,42 @@ function FileBrowser() {
           >
             {grouped
               ? Object.entries(grouped)
-                  .sort((a, b) => {
-                    if (a[0] > b[0]) return 1;
-                    if (a[0] < b[0]) return -1;
-                    return 0;
-                  })
-                  .map(([key, value]) => {
-                    return (
-                      <div className="flex flex-col" key={key}>
-                        <h3 className="border-b border-zinc-400 text-xl uppercase col-span-full">
-                          {key}
-                        </h3>
-                        <div className="divide-y divide-secondary flex flex-col py-0.5">
-                          {value.map((item) => (
-                            <FileRow
-                              id={item.id}
-                              key={item.id}
-                              title={item.title}
-                              createdAt={item.createdAt}
-                              type={item.type}
-                              size={item.size}
-                            />
-                          ))}
-                        </div>
+                .sort((a, b) => {
+                  if (a[0] > b[0]) return 1;
+                  if (a[0] < b[0]) return -1;
+                  return 0;
+                })
+                .map(([key, value]) => {
+                  return (
+                    <div className="flex flex-col" key={key}>
+                      <h3 className="border-b border-zinc-400 text-xl uppercase col-span-full">
+                        {key}
+                      </h3>
+                      <div className="divide-y divide-secondary flex flex-col py-0.5">
+                        {value.map((item) => (
+                          <FileRow
+                            id={item.id}
+                            key={item.id}
+                            title={item.title}
+                            createdAt={item.createdAt}
+                            type={item.type}
+                            size={item.size}
+                          />
+                        ))}
                       </div>
-                    );
-                  })
+                    </div>
+                  );
+                })
               : data.map((item) => (
-                  <FileRow
-                    key={item.id}
-                    id={item.id}
-                    title={item.title}
-                    createdAt={item.createdAt}
-                    type={item.type}
-                    size={item.size}
-                  />
-                ))}
+                <FileRow
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  createdAt={item.createdAt}
+                  type={item.type}
+                  size={item.size}
+                />
+              ))}
           </div>
         )}
       </div>

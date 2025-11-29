@@ -13,13 +13,16 @@ use reqwest::header::{CONTENT_DISPOSITION, CONTENT_LENGTH, CONTENT_TYPE};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use tokio_postgres::types::ToSql;
 use tokio_util::io::ReaderStream;
 use tracing::debug;
 use uuid::Uuid;
 
 use crate::{
     consts::MAX_FILE_SIZE,
-    enums::{errors::AppError, file_enums::FileTypes, storage_enums::S3Providers},
+    enums::{
+        errors::AppError, file_enums::FileTypes, model_enums::Models, storage_enums::S3Providers,
+    },
     models::{
         auth::AuthSession,
         request::QueryParams,
@@ -27,7 +30,10 @@ use crate::{
         state::AppState,
     },
     traits::db_traits::SerializeList,
-    utils::file_utils::upload_file,
+    utils::{
+        db_utils::{WhereBuilder, convert_filter_type},
+        file_utils::upload_file,
+    },
 };
 
 fn default_path() -> String {
@@ -263,12 +269,27 @@ async fn list_files(
     Query(query): Query<QueryParams>,
 ) -> RouteResponse<Value> {
     let conn = state.get_db_conn().await?;
+    let filters = query.filter_conditions();
     let query_sort = query.to_query_sort(&crate::enums::model_enums::Models::Files);
 
     let sort = match query_sort.is_empty() {
         true => "ORDER BY type = 'folder' desc",
         false => &query_sort.replace("ORDER BY", "ORDER BY type = 'folder' desc, "),
     };
+    let mut sql_params = vec![query.path, session.user.id.to_string()];
+
+    let mut builder = WhereBuilder::new(&Models::Files, Some(sql_params.len()));
+    let (filter_where, filter_params) = builder.build_where_clause(filters)?;
+    sql_params.extend(filter_params);
+    let inputs_dyn: Vec<Box<dyn ToSql + Sync + Send>> = sql_params
+        .iter()
+        .filter_map(convert_filter_type)
+        .collect::<Vec<_>>();
+
+    let inputs_dyn = inputs_dyn
+        .iter()
+        .map(|input| input.as_ref() as &(dyn ToSql + Sync))
+        .collect::<Vec<_>>();
 
     let stmt = format!(
         "
@@ -278,14 +299,17 @@ async fn list_files(
             path = $1
                 AND
             owner_id = $2
+                AND
+            {where_clause}
         {sort}
         LIMIT 25
         OFFSET 0;",
+        where_clause = filter_where,
         sort = sort
     );
 
     let rows = conn
-        .query(&stmt, &[&query.path, &session.user.id])
+        .query(&stmt, &inputs_dyn)
         .await
         .map_err(|err| AppError::db_error(err))?;
 

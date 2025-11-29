@@ -149,6 +149,14 @@ impl QueryParams {
     }
     pub fn filter_conditions(&self) -> Option<Conditions> {
         if let Some(filters) = &self.filters {
+            println!("{}", filters);
+            println!("{}", filters);
+            println!("{}", filters);
+            println!("{}", filters);
+            println!("{}", filters);
+            println!("{}", filters);
+            println!("{}", filters);
+            println!("{}", filters);
             let conditions = serde_json::from_str::<Conditions>(filters);
             if conditions.is_err() {
                 tracing::error!(
@@ -159,7 +167,7 @@ impl QueryParams {
             }
             return Some(conditions.unwrap());
         }
-        return None;
+        None
     }
     pub fn relations(&self) -> HashMap<String, HashSet<String>> {
         if self.relations.is_none() {
@@ -187,10 +195,10 @@ impl QueryParams {
                         .map(|i| i.to_string().to_case(convert_case::Case::Snake))
                         .collect::<HashSet<String>>();
 
-                return (f.0.to_case(convert_case::Case::Snake), values);
+                (f.0.to_case(convert_case::Case::Snake), values)
             })
             .collect::<HashMap<String, HashSet<String>>>();
 
-        return result;
+        result
     }
 }

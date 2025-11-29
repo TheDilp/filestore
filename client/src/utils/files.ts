@@ -34,6 +34,7 @@ const previewableTypes = new Set([
   "webp",
   "gif",
   "svg",
+  "mp3",
   "mp4",
   "webm",
   "ogg",

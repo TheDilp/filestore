@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS
         title TEXT NOT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         deleted_at TIMESTAMP WITH TIME ZONE,
-        owner_id UUID REFERENCES users (id) ON DELETE CASCADE,
+        owner_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
         is_public BOOLEAN NOT NULL DEFAULT FALSE,
         type TEXT NOT NULL,
         size INT8 NOT NULL DEFAULT 0,

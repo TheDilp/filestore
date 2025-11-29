@@ -244,16 +244,45 @@ function FileBrowser() {
                 ))}
           </div>
         ) : (
-          <div className="flex flex-col divide-y divide-secondary overflow-y-auto">
-            {data.map((item) => (
-              <FileRow
-                key={item.id}
-                title={item.title}
-                createdAt={item.createdAt}
-                type={item.type}
-                size={item.size}
-              />
-            ))}
+          <div
+            className={`flex flex-col overflow-y-auto ${groupedBy ? "gap-y-4" : "divide-secondary divide-y"}`}
+          >
+            {grouped
+              ? Object.entries(grouped)
+                  .sort((a, b) => {
+                    if (a[0] > b[0]) return 1;
+                    if (a[0] < b[0]) return -1;
+                    return 0;
+                  })
+                  .map(([key, value]) => {
+                    return (
+                      <div className="flex flex-col" key={key}>
+                        <h3 className="border-b border-zinc-400 text-xl uppercase col-span-full">
+                          {key}
+                        </h3>
+                        <div className="divide-y divide-secondary flex flex-col py-0.5">
+                          {value.map((item) => (
+                            <FileRow
+                              key={item.id}
+                              title={item.title}
+                              createdAt={item.createdAt}
+                              type={item.type}
+                              size={item.size}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+              : data.map((item) => (
+                  <FileRow
+                    key={item.id}
+                    title={item.title}
+                    createdAt={item.createdAt}
+                    type={item.type}
+                    size={item.size}
+                  />
+                ))}
           </div>
         )}
       </div>

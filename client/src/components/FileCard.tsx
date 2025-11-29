@@ -110,7 +110,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
             <Button
               iconSize={20}
               onClick={async (e) => {
-                e.preventDefault()
+                e.preventDefault();
                 const res = await fetchFunction<string>({
                   model: "files",
                   id,
@@ -139,6 +139,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
                   id: "download",
                   title: "Download",
                   icon: Icons.download,
+                  isHidden: type === "folder",
                   onClick: async () => {
                     const blob = await fileFetchFunction({
                       id,
@@ -156,6 +157,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
                   id: "share",
                   title: "Share",
                   icon: Icons.share,
+                  isHidden: type === "folder",
                   onClick: undefined,
                 },
                 {

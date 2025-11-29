@@ -14,6 +14,7 @@ type Props = BaseFormComponent &
     onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
     isAutofocused?: boolean;
     isMultiple?: boolean;
+    isLoading?: boolean;
     accept?: string;
     ref?: RefObject<HTMLInputElement | null>;
     onChange: (e: {
@@ -58,6 +59,9 @@ const classes = tv({
         labelClasses: "text-error group-focus-within:text-error-highlight",
       },
     },
+    isLoading: {
+      true: "bg-secondary"
+    },
     type: {
       file: {
         base: "border-secondary",
@@ -88,6 +92,7 @@ export function Input({
   accept = "image/png, image/jpeg, image/gif",
   isAutofocused,
   isMultiple,
+  isLoading,
   min,
   max,
   ref,
@@ -95,6 +100,7 @@ export function Input({
   const { base, container, labelClasses, inputClasses } = classes({
     variant,
     type,
+    isLoading
   });
   return (
     <div className={container()}>

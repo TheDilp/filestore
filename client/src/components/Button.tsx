@@ -2,13 +2,14 @@ import { Icon } from "@iconify/react";
 import type { MouseEventHandler } from "react";
 import { tv } from "tailwind-variants";
 
-import type { AvailableIcons } from "../enums";
+import { type AvailableIcons, Icons } from "../enums";
 import type { BaseFormComponent } from "../types";
 type Props = BaseFormComponent & {
   icon?: AvailableIcons;
   iconPosition?: "left" | "right";
   iconSize?: number;
   isDisabled?: boolean;
+  isLoading?: boolean;
   isOutline?: boolean;
   isFullWidth?: boolean;
   hasNoBorder?: boolean;
@@ -52,6 +53,7 @@ const classes = tv({
     isDisabled: {
       true: "bg-disabled active:bg-disabled hover:bg-disabled cursor-not-allowed border border-secondary text-gray-300 shadow-none transition-none active:scale-100 active:text-gray-300",
     },
+
     hasNoBorder: {
       true: "border-0 shadow-none hover:bg-transparent active:bg-transparent",
       false: "",
@@ -161,6 +163,7 @@ export function Button({
   iconSize = 24,
   isDisabled,
   isFullWidth,
+  isLoading,
   onClick,
   isOutline,
   hasNoBorder,
@@ -170,7 +173,7 @@ export function Button({
 }: Props) {
   const { base } = classes({
     variant,
-    isDisabled,
+    isDisabled: isDisabled || isLoading,
     isOutline,
     isFullWidth,
     hasIconOnly: !title && !!icon,
@@ -185,12 +188,20 @@ export function Button({
       className={base()}
     >
       {icon && iconPosition === "left" ? (
-        <Icon icon={icon} fontSize={iconSize} />
+        <Icon
+          icon={isLoading ? Icons.loading : icon}
+          fontSize={iconSize}
+          className={isLoading ? "animate-spin text-info" : ""}
+        />
       ) : null}
 
       {title ? title : null}
       {icon && iconPosition === "right" ? (
-        <Icon icon={icon} fontSize={iconSize} />
+        <Icon
+          icon={isLoading ? Icons.loading : icon}
+          fontSize={iconSize}
+          className={isLoading ? "animate-spin text-info" : ""}
+        />
       ) : null}
     </button>
   );

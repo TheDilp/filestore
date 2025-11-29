@@ -3,6 +3,7 @@ use strum::Display;
 
 #[derive(Debug, Deserialize, Clone, Display, Default)]
 #[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum SortType {
     #[default]
     Asc,

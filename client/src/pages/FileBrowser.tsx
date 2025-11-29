@@ -263,6 +263,7 @@ function FileBrowser() {
                         <div className="divide-y divide-secondary flex flex-col py-0.5">
                           {value.map((item) => (
                             <FileRow
+                              id={item.id}
                               key={item.id}
                               title={item.title}
                               createdAt={item.createdAt}
@@ -277,6 +278,7 @@ function FileBrowser() {
               : data.map((item) => (
                   <FileRow
                     key={item.id}
+                    id={item.id}
                     title={item.title}
                     createdAt={item.createdAt}
                     type={item.type}

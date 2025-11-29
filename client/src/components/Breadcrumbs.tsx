@@ -1,4 +1,4 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 import { Icons } from "../enums";
 import { Icon } from "./Icon";
@@ -7,7 +7,8 @@ type Props = {
   items: { id: string; title: string; path: string }[];
 };
 export function Breadcrumbs({ items = [] }: Props) {
-  const path = useLocation();
+
+
   return (
     <nav className="w-full text-xl max-h-fit">
       <ul className="w-full h-full flex flex-row gap-x-1">
@@ -17,7 +18,7 @@ export function Breadcrumbs({ items = [] }: Props) {
             to="/browser/{-$path}"
             params={{ path: "" }}
           >
-            <span>Home</span>
+            <span className={`${items.length > 0 ? "text-info-highlight" : ""}`}>Home</span>
             {items.length > 0 ? (
               <span>
                 <Icon icon={Icons.arrowRight} />
@@ -27,7 +28,7 @@ export function Breadcrumbs({ items = [] }: Props) {
         </li>
         {items.map((item, idx) => (
           <li
-            className={`${path.href.split("/").at(-1) === item.path ? "text-info-highlight" : "text-primary"}`}
+
             key={item.id}
           >
             <Link
@@ -40,7 +41,7 @@ export function Breadcrumbs({ items = [] }: Props) {
                   .join("/"),
               }}
             >
-              <span>{item.title}</span>
+              <span className={`${idx < items.length - 1 ? "text-info-highlight" : "text-primary"}`}>{item.title}</span>
               {idx < items.length - 1 ? (
                 <span>
                   <Icon icon={Icons.arrowRight} />

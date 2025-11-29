@@ -11,7 +11,7 @@ import {
   Select,
 } from "../components";
 import { Icons } from "../enums";
-import { useList } from "../hooks";
+import { useCreateNotification, useList, useUpload } from "../hooks";
 import { FileSchema } from "../schemas";
 import { fetchFunction, groupBy } from "../utils";
 const sortOptions = [
@@ -59,6 +59,7 @@ function FileBrowser() {
     field: keyof zodInfer<typeof FileSchema>;
     type: "asc" | "desc";
   }>({ field: "createdAt", type: "asc" });
+  const createNotification = useCreateNotification();
   const [groupedBy, setGroupedBy] = useState<"type" | null>(null);
   const ref = useRef<HTMLInputElement>(null);
   const params = useParams({ from: "/browser/{-$path}" });
@@ -74,29 +75,7 @@ function FileBrowser() {
     }
   );
 
-  async function uploadFiles() {
-    if (!files) return;
-    const formData = new FormData();
-
-    for (let index = 0; index < files.length; index++)
-      formData.append(`file${index}`, files[index], files[index].name);
-
-    const res = await fetchFunction({
-      model: "files",
-      action: "upload",
-      body: formData,
-      method: "POST",
-      searchParams: [
-        ["path", params?.path || ""],
-        ["is_public", true],
-        ["is_folder", true],
-      ],
-    });
-    if (res.ok && ref.current) {
-      ref.current.value = "";
-      refetch();
-    }
-  }
+  const { mutate, isPending } = useUpload();
   const crumbs = (params.path || "")
     .split("/")
     .filter(Boolean)
@@ -114,6 +93,7 @@ function FileBrowser() {
             <Input
               ref={ref}
               isMultiple
+              isDisabled={isPending}
               accept={
                 import.meta.env.VITE_ACCEPT_FILE_TYPES ||
                 "image/*, audio/*, video/*"
@@ -131,9 +111,27 @@ function FileBrowser() {
               iconSize={16}
               iconPosition="left"
               isDisabled={!files?.length}
-              onClick={uploadFiles}
+              onClick={() =>
+                mutate(
+                  { files, path: params?.path },
+                  {
+                    onSuccess: () => {
+                      if (ref.current) {
+                        ref.current.value = "";
+                        refetch();
+                        createNotification({
+                          title: "File(s) successfully uploaded.",
+                          variant: "success",
+                          icon: Icons.upload,
+                        });
+                      }
+                    },
+                  }
+                )
+              }
               title="Upload"
               variant="primary"
+              isLoading={isPending}
               icon={Icons.upload}
             />
           </div>

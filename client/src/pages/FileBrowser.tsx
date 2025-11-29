@@ -11,7 +11,12 @@ import {
   Select,
 } from "../components";
 import { Icons } from "../enums";
-import { useCreateNotification, useList, useUpload } from "../hooks";
+import {
+  useCreateNotification,
+  useDebounce,
+  useList,
+  useUpload,
+} from "../hooks";
 import { FileSchema } from "../schemas";
 import { fetchFunction, groupBy } from "../utils";
 const sortOptions = [
@@ -59,6 +64,8 @@ function FileBrowser() {
     field: keyof zodInfer<typeof FileSchema>;
     type: "asc" | "desc";
   }>({ field: "createdAt", type: "asc" });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search);
   const createNotification = useCreateNotification();
   const [groupedBy, setGroupedBy] = useState<"type" | null>(null);
   const ref = useRef<HTMLInputElement>(null);
@@ -71,8 +78,21 @@ function FileBrowser() {
         sort.field,
         sort.type,
         params?.path || "",
+        debouncedSearch,
       ],
       model: "files",
+      filters: debouncedSearch
+        ? {
+            and: [
+              {
+                id: "search",
+                field: "title",
+                value: debouncedSearch,
+                operator: "ilike",
+              },
+            ],
+          }
+        : undefined,
       fields,
       sort,
     },
@@ -141,7 +161,7 @@ function FileBrowser() {
               icon={Icons.upload}
             />
           </div>
-          <div className="">
+          <div>
             <Button
               title="New folder"
               icon={Icons.folder}
@@ -159,6 +179,18 @@ function FileBrowser() {
         <div className="flex items-center justify-between max-sm:gap-y-8 max-sm:flex-col">
           <h2 className="text-2xl font-semibold max-sm:hidden">Your Files</h2>
           <div className="flex items-end gap-x-2">
+            <div className="">
+              <Input
+                name="search"
+                onChange={(e) => {
+                  if (e.value) setSearch(e.value);
+                }}
+                value={search}
+                type="search"
+                variant="secondary"
+                placeholder="Search"
+              />
+            </div>
             <div className="w-30">
               <Select
                 options={groupOptions}

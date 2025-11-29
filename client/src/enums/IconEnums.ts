@@ -79,6 +79,7 @@ export const Icons = {
   xml: "bi:filetype-xml" as const,
   yml: "bi:filetype-yml" as const,
   zip: "ph:file-zip" as const,
+  other: "mdi-light:file" as const,
   unknownFileType: "carbon:document-unknown" as const,
 };
 

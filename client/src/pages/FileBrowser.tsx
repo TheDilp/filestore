@@ -65,7 +65,13 @@ function FileBrowser() {
   const params = useParams({ from: "/browser/{-$path}" });
   const { data = [], refetch } = useList<zodInfer<typeof FileSchema>>(
     {
-      queryKey: ["files", fieldString, sort.field, params?.path || ""],
+      queryKey: [
+        "files",
+        fieldString,
+        sort.field,
+        sort.type,
+        params?.path || "",
+      ],
       model: "files",
       fields,
       sort,
@@ -153,21 +159,6 @@ function FileBrowser() {
         <div className="flex items-center justify-between max-sm:gap-y-8 max-sm:flex-col">
           <h2 className="text-2xl font-semibold max-sm:hidden">Your Files</h2>
           <div className="flex items-end gap-x-2">
-            <div className="w-46">
-              <Select
-                options={sortOptions}
-                onChange={(e) => {
-                  setSort({
-                    field: e.value as keyof zodInfer<typeof FileSchema>,
-                    type: "asc",
-                  });
-                }}
-                name="sort"
-                value={sort.field}
-                title="Sort"
-                variant="secondary"
-              />
-            </div>
             <div className="w-30">
               <Select
                 options={groupOptions}
@@ -180,13 +171,35 @@ function FileBrowser() {
                 variant="secondary"
               />
             </div>
+            <div className="w-46">
+              <Select
+                options={sortOptions}
+                onChange={(e) => {
+                  setSort({
+                    field: e.value as keyof zodInfer<typeof FileSchema>,
+                    type: sort.type,
+                  });
+                }}
+                name="sort"
+                value={sort.field}
+                title="Sort"
+                variant="secondary"
+              />
+            </div>
 
             <Button
               isOutline
-              icon={Icons.sort}
+              icon={
+                sort.type === "asc" ? Icons.arrowUpSort : Icons.arrowDownSort
+              }
               size="xl"
-              onClick={undefined}
-              variant="secondary"
+              onClick={() =>
+                setSort((prev) => ({
+                  ...prev,
+                  type: prev.type === "asc" ? "desc" : "asc",
+                }))
+              }
+              variant="info"
             />
             <Button
               isOutline={view !== "grid"}

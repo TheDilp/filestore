@@ -7,6 +7,8 @@ export const Icons = {
   arrowLeft: "lucide:chevron-left" as const,
   arrowRight: "lucide:chevron-right" as const,
   arrowUp: "lucide:chevron-up" as const,
+  "arrowUpSort": "mdi:arrow-up" as const,
+  "arrowDownSort": "mdi:arrow-down" as const,
   bmp: "bi:filetype-bmp" as const,
   close: "material-symbols:close-rounded" as const,
   cs: "bi:filetype-cs" as const,

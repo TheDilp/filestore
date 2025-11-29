@@ -30,19 +30,7 @@ services:
       - postgres_data:/var/lib/postgresql
     networks:
       - internal
-  typesense:
-    image: typesense/typesense:latest
-    container_name: typesense
-    restart: always
-    environment:
-      TYPESENSE_API_KEY: ${TYPESENSE_API_KEY}
-      TYPESENSE_DATA_DIR: "/data"
-      TYPESENSE_LISTEN_PORT: 8108
-      TYPESENSE_ENABLE_CORS: "true"
-    ports:
-      - "8108:8108"
-    volumes:
-      - typesense_data:/data
+
 volumes:
   postgres_data:
   dragonfly_data:

@@ -38,43 +38,9 @@ export function useList<F extends Record<string, unknown>, O = F>(
     searchParams?: string[][];
   }
 ) {
-  //   const reset = useResetAtom(userAtom);
-
-  let finalFilters = filters || undefined;
-
-  if (!Models.includes(model)) {
-    finalFilters = filters || { and: [], or: [] };
-    if (isArchived)
-      finalFilters = {
-        ...finalFilters,
-        and: [
-          ...(finalFilters.and || []),
-          {
-            id: "is_archived",
-            field: "deletedAt",
-            value: null,
-            operator: "is not",
-          },
-        ],
-      };
-    else
-      finalFilters = {
-        ...finalFilters,
-        and: [
-          ...(finalFilters.and || []),
-          {
-            id: "is_archived",
-            field: "deletedAt",
-            value: null,
-            operator: "is",
-          },
-        ],
-      };
-  }
-
   const searchParams = getSearchParams<F>({
     fields,
-    filters: finalFilters,
+    filters,
     sort,
     relations,
     pagination,
@@ -97,7 +63,7 @@ export function useList<F extends Record<string, unknown>, O = F>(
         model,
         "list",
         fields,
-        finalFilters,
+        filters,
         sort,
         pagination?.limit,
         pagination?.page,
@@ -111,6 +77,7 @@ export function useList<F extends Record<string, unknown>, O = F>(
         model,
         searchParams,
         action: "list",
+
         // userReset: reset,
         // urlPrefix: options?.urlPrefix,
         // urlSuffix: `list${options?.urlSuffix ? `/${options?.urlSuffix}` : ""}`,

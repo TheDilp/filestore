@@ -183,7 +183,7 @@ function FileBrowser() {
               <Input
                 name="search"
                 onChange={(e) => {
-                  if (e.value) setSearch(e.value);
+                  if (e.value !== null) setSearch(e.value);
                 }}
                 value={search}
                 type="search"

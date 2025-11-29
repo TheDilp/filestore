@@ -61,7 +61,8 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
           <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
             <Button
               isDisabled={!isPreviewable(type)}
-              onClick={async () => {
+              onClick={async (e) => {
+                e.preventDefault();
                 if (
                   isText(type) ||
                   isCode(type) ||
@@ -108,7 +109,8 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
           <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
             <Button
               iconSize={20}
-              onClick={async () => {
+              onClick={async (e) => {
+                e.preventDefault()
                 const res = await fetchFunction<string>({
                   model: "files",
                   id,
@@ -174,7 +176,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
               ]}
             >
               <Button
-                onClick={undefined}
+                onClick={(e) => e.preventDefault()}
                 hasNoBorder
                 isOutline
                 icon={Icons.menu}

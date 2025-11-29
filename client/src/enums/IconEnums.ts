@@ -33,6 +33,7 @@ export const Icons = {
   jsx: "bi:filetype-jsx" as const,
   key: "bi:filetype-key" as const,
   list: "lucide:list" as const,
+  loading: "prime:spinner" as const,
   m4p: "bi:filetype-m4p" as const,
   menu: "heroicons:ellipsis-horizontal" as const,
   md: "bi:filetype-md" as const,

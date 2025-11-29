@@ -255,6 +255,7 @@ async fn generate_link(
 
 async fn list_files(
     State(state): State<AppState>,
+    Extension(session): Extension<AuthSession>,
     Query(query): Query<QueryParams>,
 ) -> RouteResponse<Value> {
     let conn = state.get_db_conn().await?;
@@ -268,8 +269,11 @@ async fn list_files(
     let stmt = format!(
         "
         SELECT id, created_at, title, type, size, is_public, path
-        FROM files 
-        WHERE path = $1
+        FROM files
+        WHERE
+            path = $1
+                AND
+            owner_id = $2
         {sort}
         LIMIT 25
         OFFSET 0;",
@@ -277,7 +281,7 @@ async fn list_files(
     );
 
     let rows = conn
-        .query(&stmt, &[&query.path])
+        .query(&stmt, &[&query.path, &session.user.id])
         .await
         .map_err(|err| AppError::db_error(err))?;
 

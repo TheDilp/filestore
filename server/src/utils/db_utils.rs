@@ -8,10 +8,11 @@ use tokio_postgres::types::ToSql;
 use uuid::Uuid;
 
 use crate::{
-    enums::model_enums::Models,
+    enums::{errors::AppError, model_enums::Models},
     models::{
         request::{Conditions, FilterOperators},
         response::AppErrorResponse,
+        state::AppState,
     },
 };
 
@@ -217,4 +218,13 @@ pub fn convert_filter_type(input: &impl ToString) -> Option<Box<dyn ToSql + Sync
     } else {
         Some(Box::new(input.to_owned()) as Box<dyn ToSql + Sync + Send>)
     }
+}
+
+pub async fn db_init_setup(state: &AppState) -> Result<(), AppErrorResponse> {
+    let conn = state.get_db_conn().await?;
+    conn.execute("SET pg_trgm.similarity_threshold = 0.1;", &[])
+        .await
+        .map_err(|err| AppError::db_error(err))?;
+
+    Ok(())
 }

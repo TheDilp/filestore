@@ -28,7 +28,7 @@ use crate::{
     middleware::session_middleware::session_middleware,
     models::state::AppState,
     routes::{auth_routes::auth_routes, file_routes::file_routes},
-    utils::storage_utils::configure_lifecycle_rules,
+    utils::{db_utils::db_init_setup, storage_utils::configure_lifecycle_rules},
 };
 mod consts;
 mod enums;
@@ -160,6 +160,8 @@ async fn main() {
         cdn_endpoint,
         environment,
     };
+
+    let _ = db_init_setup(&state).await;
 
     let base_router = Router::new()
         .merge(file_routes())

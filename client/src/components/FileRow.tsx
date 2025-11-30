@@ -45,7 +45,7 @@ export function FileRow({ id, title, type, createdAt, size }: Props) {
       params={{ path: `${params.path ? `${params.path}/` : ""}${title}` }}
     >
       <div
-        className={`pl-2 pr-0 py-4 hover:bg-secondary-highlight dark:hover:bg-primary  flex flex-col items-center group ${preview ? "h-fit" : "h-12"}`}
+        className={`pl-2 pr-0 py-4 hover:bg-secondary-highlight dark:hover:bg-primary flex flex-col items-center group ${preview ? "h-fit" : "h-12"}`}
       >
         <div className="flex items-center h-full flex-nowrap gap-x-4 w-full">
           <div>

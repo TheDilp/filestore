@@ -33,7 +33,7 @@
   --color-warning: var(--color-orange-700);
   --color-error: var(--color-red-700);
 
-  --color-primary-highlight: var(--color-zinc-600);
+  --color-primary-highlight: var(--color-zinc-800);
   --color-secondary-highlight: var(--color-zinc-400);
   --color-info-highlight: var(--color-blue-300);
   --color-success-highlight: var(--color-green-400);

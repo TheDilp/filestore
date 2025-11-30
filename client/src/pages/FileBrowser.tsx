@@ -19,7 +19,7 @@ import {
   useUpload,
 } from "../hooks";
 import { FileSchema } from "../schemas";
-import { fetchFunction, groupBy } from "../utils";
+import { fetchFunction, getFileSize, groupBy } from "../utils";
 const sortOptions = [
   { id: "size", label: "Size", value: "size" },
   { id: "title", label: "Title", value: "title" },
@@ -59,7 +59,7 @@ const fields: (keyof zodInfer<typeof FileSchema>)[] = [
 ];
 const fieldString = fields.join("");
 function FileBrowser() {
-  const [files, setFiles] = useState<FileList>();
+  const [files, setFiles] = useState<{ file: File; name: string }[]>([]);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState<{
     field: keyof zodInfer<typeof FileSchema>;
@@ -124,63 +124,117 @@ function FileBrowser() {
         </div>
       </div>
       <div className="w-full px-6 flex flex-col gap-y-10 mx-auto flex-1 max-h-[calc(100%-120px)]">
-        <div className="rounded-md border border-secondary w-full p-4 flex items-center flex-nowrap gap-x-2">
-          <div className="h-10 grow">
-            <Input
-              ref={ref}
-              isMultiple
-              isDisabled={isPending}
-              accept={
-                import.meta.env.VITE_ACCEPT_FILE_TYPES ||
-                "image/*, audio/*, video/*"
-              }
-              onChange={(e) => {
-                if (e.files) setFiles(e.files);
-              }}
-              name="files"
-              value=""
-              type="file"
-            />
+        <div className="rounded-md border border-secondary w-full p-4 flex flex-col gap-y-2">
+          <div className="flex flex-nowrap items-center gap-x-2">
+            <div className="h-10 grow">
+              <Input
+                ref={ref}
+                isMultiple
+                isDisabled={isPending}
+                accept={
+                  import.meta.env.VITE_ACCEPT_FILE_TYPES ||
+                  "image/*, audio/*, video/*"
+                }
+                onChange={(e) => {
+                  if (e.files)
+                    setFiles((prev) =>
+                      prev.concat(
+                        Array.from(e.files || []).map((file) => ({
+                          name: file.name,
+                          file,
+                        }))
+                      )
+                    );
+                }}
+                name="files"
+                value=""
+                type="file"
+              />
+            </div>
+            <div className="h-full flex items-center">
+              <Button
+                iconSize={16}
+                iconPosition="left"
+                isDisabled={!files?.length}
+                onClick={() =>
+                  mutate(
+                    { files, path: params?.path },
+                    {
+                      onSuccess: () => {
+                        if (ref.current) {
+                          ref.current.value = "";
+                          refetch();
+                          setFiles([]);
+                          createNotification({
+                            title: "File(s) successfully uploaded.",
+                            variant: "success",
+                            icon: Icons.upload,
+                          });
+                        }
+                      },
+                    }
+                  )
+                }
+                title="Upload"
+                variant="primary"
+                isLoading={isPending}
+                icon={Icons.upload}
+              />
+            </div>
+            <div>
+              <Button
+                title="New folder"
+                icon={Icons.folder}
+                onClick={() => {
+                  const title = prompt("Enter folder name");
+                  if (title) createFolder(title, params.path || "", refetch);
+                }}
+              />
+            </div>
           </div>
-          <div className="h-full flex items-center">
-            <Button
-              iconSize={16}
-              iconPosition="left"
-              isDisabled={!files?.length}
-              onClick={() =>
-                mutate(
-                  { files, path: params?.path },
-                  {
-                    onSuccess: () => {
-                      if (ref.current) {
-                        ref.current.value = "";
-                        refetch();
-                        createNotification({
-                          title: "File(s) successfully uploaded.",
-                          variant: "success",
-                          icon: Icons.upload,
-                        });
+
+          {files && files.length ? (
+            <ol className="pl-1.5">
+              {Array.from(files).map((file, idx) => (
+                <li
+                  className="py-1 flex items-center gap-x-8"
+                  key={file.file.name + file.file.type}
+                >
+                  <div className="grow">
+                    <Input
+                      name="name"
+                      value={file.name}
+                      variant={file.name ? "secondary" : "error"}
+                      helperText={
+                        file?.name ? "" : "File name cannot be empty."
                       }
-                    },
-                  }
-                )
-              }
-              title="Upload"
-              variant="primary"
-              isLoading={isPending}
-              icon={Icons.upload}
-            />
-          </div>
-          <div>
-            <Button
-              title="New folder"
-              icon={Icons.folder}
-              onClick={() => {
-                const title = prompt("Enter folder name");
-                if (title) createFolder(title, params.path || "", refetch);
-              }}
-            />
-          </div>
+                      onChange={(e) => {
+                        if (e.value)
+                          setFiles((prev) => {
+                            if (e.value) {
+                              const temp = [...prev];
+                              temp[idx].name = e.value;
+                              return temp;
+                            }
+                            return prev;
+                          });
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm">{getFileSize(file.file.size)}</span>
+                  <div className="ml-auto">
+                    <Button
+                      size="lg"
+                      variant="error"
+                      isOutline
+                      icon={Icons.delete}
+                      onClick={() => setFiles((prev) => prev.toSpliced(idx, 1))}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ol>
+          ) : null}
         </div>
         <div>
           <Breadcrumbs items={crumbs} />

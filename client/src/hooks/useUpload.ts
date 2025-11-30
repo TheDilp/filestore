@@ -6,14 +6,14 @@ async function uploadFiles({
   files,
   path,
 }: {
-  files: FileList | undefined;
+  files: { file: File; name: string }[];
   path: string | undefined;
 }) {
   if (!files) return;
   const formData = new FormData();
 
   for (let index = 0; index < files.length; index++)
-    formData.append(`file${index}`, files[index], files[index].name);
+    formData.append(`file${index}`, files[index].file, files[index].name);
 
   const res = await fetchFunction({
     model: "files",

@@ -66,7 +66,7 @@ const classes = tv({
       file: {
         base: "border-secondary",
         inputClasses:
-          "file:border-0 file:font-medium pr-4 pl-0 file:py-2.5 file:relative text-sm file:border-r file:border-secondary file:px-2",
+          "file:border-0 file:font-medium pr-4 pl-0 file:bg-primary file:text-white file:py-2.5 file:relative text-sm file:border-r file:border-secondary file:px-2",
       },
       number: {},
       text: {},

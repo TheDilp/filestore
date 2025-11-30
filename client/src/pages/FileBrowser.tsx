@@ -194,7 +194,7 @@ function FileBrowser() {
           </div>
 
           {files && files.length ? (
-            <ol className="pl-1.5">
+            <ol className="pl-1.5 max-h-96 overflow-y-auto">
               {Array.from(files).map((file, idx) => (
                 <li
                   className="py-1 flex items-center gap-x-8"

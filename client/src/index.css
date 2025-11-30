@@ -28,10 +28,10 @@
 
   --color-primary: var(--color-zinc-950);
   --color-secondary: var(--color-zinc-700);
-  --color-info: var(--color-blue-700);
-  --color-success: var(--color-green-700);
-  --color-warning: var(--color-orange-700);
-  --color-error: var(--color-red-700);
+  --color-info: var(--color-blue-500);
+  --color-success: var(--color-green-500);
+  --color-warning: var(--color-orange-500);
+  --color-error: var(--color-red-500);
 
   --color-primary-highlight: var(--color-zinc-800);
   --color-secondary-highlight: var(--color-zinc-400);

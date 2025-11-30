@@ -196,7 +196,7 @@ async fn download_file(
         .s3_client
         .get_object()
         .bucket(&state.s3_name)
-        .key(format!("{}{}", &query.format_path(), id))
+        .key(format!("{}{}", &query.format_path(), title))
         .send()
         .await
         .map_err(|err| AppError::s3_error(err))?;

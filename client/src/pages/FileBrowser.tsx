@@ -312,10 +312,10 @@ function FileBrowser() {
                   .map(([key, value]) => {
                     return (
                       <div className="flex flex-col" key={key}>
-                        <h3 className="border-b border-zinc-400 text-xl uppercase col-span-full">
+                        <h3 className="border-b border-zinc-400 dark:border-secondary text-xl uppercase col-span-full">
                           {key}
                         </h3>
-                        <div className="divide-y divide-secondary flex flex-col py-0.5">
+                        <div className="divide-y divide-secondary dark:divide-primary-highlight flex flex-col py-0.5">
                           {value.map((item) => (
                             <FileRow
                               id={item.id}

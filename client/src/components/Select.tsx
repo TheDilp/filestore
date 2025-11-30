@@ -25,7 +25,7 @@ type Props = BaseFormComponent &
 
 const classes = tv({
   slots: {
-    base: "flex h-10 max-h-10 min-h-10 w-full flex-1 cursor-pointer items-center justify-between gap-x-2 rounded-lg border dark:bg-primary-highlight bg-white px-2 outline-1 outline-transparent",
+    base: "flex h-10 max-h-10 min-h-10 w-full flex-1 cursor-pointer items-center justify-between gap-x-2 rounded-lg border dark:bg-primary bg-white px-2 outline-1 outline-transparent",
     labelClasses: "max-h-4 text-sm dark:text-secondary-highlight",
     container: "group flex flex-col gap-y-1",
     optionsContainer:

@@ -45,7 +45,7 @@ export function FileCard({ id, title, type, createdAt, size }: Props) {
       params={{ path: `${params.path ? `${params.path}/` : ""}${title}` }}
     >
       <div
-        className={`border border-secondary p-4 rounded-md hover:shadow group ${preview ? "h-56" : "h-28"} transition-[shadow,height] duration-300 ease-in-out`}
+        className={`border border-secondary dark:bg-primary p-4 rounded-md hover:shadow group ${preview ? "h-56" : "h-28"} transition-[shadow,height] duration-300 ease-in-out`}
       >
         <div className="flex flex-row items-center justify-between h-10">
           <div className="flex flex-1 flex-no-wrap justify-between max-w-full items-center gap-x-4">

@@ -64,9 +64,9 @@ export function Drawer() {
       <div
         ref={refs.setFloating}
         style={{ ...styles, transitionDuration: "0.35s" }}
-        className="h-screen w-[calc(50vw)]  max-lg:w-screen max-h-screen right-0 absolute pointer-events-auto rounded-l bg-white shadow"
+        className="h-screen w-[calc(50vw)]  max-lg:w-screen max-h-screen right-0 absolute pointer-events-auto rounded-l bg-white dark:bg-primary-darkened shadow"
       >
-        <h2 className="text-3xl bg-white px-4 py-2 font-semibold border-b border-primary-highlight flex items-center justify-between">
+        <h2 className="text-3xl bg-white dark:bg-primary-darkened dark:text-white px-4 py-2 font-semibold border-b border-primary-highlight flex items-center justify-between">
           {drawer?.title}
           <div>
             <Button

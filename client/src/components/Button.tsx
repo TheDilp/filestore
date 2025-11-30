@@ -53,7 +53,11 @@ const classes = tv({
     isDisabled: {
       true: "bg-disabled active:bg-disabled hover:bg-disabled cursor-not-allowed border border-secondary text-gray-300 shadow-none transition-none active:scale-100 active:text-gray-300",
     },
-
+    isLoading: {
+      true: {
+        iconClasses: "animate-spin text-info-highlight",
+      },
+    },
     hasNoBorder: {
       true: "border-0 shadow-none hover:bg-transparent active:bg-transparent",
       false: "",
@@ -171,11 +175,12 @@ export function Button({
   variant = "primary",
   size = "md",
 }: Props) {
-  const { base } = classes({
+  const { base, iconClasses } = classes({
     variant,
     isDisabled: isDisabled || isLoading,
     isOutline,
     isFullWidth,
+    isLoading,
     hasIconOnly: !title && !!icon,
     hasNoBorder,
     size,
@@ -191,7 +196,7 @@ export function Button({
         <Icon
           icon={isLoading ? Icons.loading : icon}
           fontSize={iconSize}
-          className={isLoading ? "animate-spin text-info" : ""}
+          className={iconClasses()}
         />
       ) : null}
 
@@ -200,7 +205,7 @@ export function Button({
         <Icon
           icon={isLoading ? Icons.loading : icon}
           fontSize={iconSize}
-          className={isLoading ? "animate-spin text-info" : ""}
+          className={iconClasses()}
         />
       ) : null}
     </button>

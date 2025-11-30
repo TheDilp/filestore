@@ -24,7 +24,7 @@ const sortOptions = [
   { id: "size", label: "Size", value: "size" },
   { id: "title", label: "Title", value: "title" },
   { id: "type", label: "Type", value: "type" },
-  { id: "created_at", label: "Uploaded at", value: "created_at" },
+  { id: "createdAt", label: "Uploaded at", value: "createdAt" },
 ];
 const groupOptions: {
   id: string;
@@ -295,7 +295,6 @@ function FileBrowser() {
                   type: prev.type === "asc" ? "desc" : "asc",
                 }))
               }
-              variant="info"
             />
             <Button
               isOutline={view !== "grid"}

@@ -108,6 +108,7 @@ async fn upload_file_route(
         let upload_result = upload_file(&state, field, &file_path, &query.is_public).await;
         debug!("END FILE UPLOAD");
         if let Ok((title, file_type, size)) = upload_result {
+            //TODO: Optimize by using batch insert
             let db_result = tx
                 .execute(
                     &statement,

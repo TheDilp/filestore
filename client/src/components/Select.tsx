@@ -25,10 +25,11 @@ type Props = BaseFormComponent &
 
 const classes = tv({
   slots: {
-    base: "flex h-10 max-h-10 min-h-10 w-full flex-1 cursor-pointer items-center justify-between gap-x-2 rounded-lg border bg-white px-2 outline-1 outline-transparent",
+    base: "flex h-10 max-h-10 min-h-10 w-full flex-1 cursor-pointer items-center justify-between gap-x-2 rounded-lg border dark:bg-primary-highlight bg-white px-2 outline-1 outline-transparent",
     labelClasses: "max-h-4 text-sm",
     container: "group flex flex-col gap-y-1",
-    optionsContainer: "rounded-md border bg-white shadow outline-0",
+    optionsContainer:
+      "rounded-md border bg-white dark:bg-primary-highlight dark:text-white shadow outline-0",
   },
   variants: {
     variant: {
@@ -154,7 +155,7 @@ export function Select({
                     listRef.current[i] = node;
                   }}
                   role="option"
-                  className={`border-t-secondary cursor-pointer overflow-hidden border-t p-2 outline-0 transition-colors first:rounded-t-md first:border-t-0 last:rounded-b-md ${i === activeIndex || item?.value === value ? "bg-info-highlight/20 text-info" : "text-black"}`}
+                  className={`border-t-secondary cursor-pointer overflow-hidden border-t p-2 outline-0 transition-colors first:rounded-t-md first:border-t-0 last:rounded-b-md ${i === activeIndex || item?.value === value ? "bg-info-highlight/20 dark:bg-info-highlight text-info dark:text-white" : "text-black dark:text-white"}`}
                   tabIndex={i === activeIndex ? 0 : -1}
                   aria-selected={value === item?.value && i === activeIndex}
                   {...getItemProps({

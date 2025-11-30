@@ -49,7 +49,10 @@ const classes = tv({
       true: "w-full",
       false: "w-fit",
     },
-    isOutline: { true: "bg-transparent text-black", false: "" },
+    isOutline: {
+      true: "bg-transparent dark:bg-transparent text-black",
+      false: "",
+    },
     isDisabled: {
       true: "bg-disabled active:bg-disabled hover:bg-disabled cursor-not-allowed border border-secondary text-gray-300 shadow-none transition-none active:scale-100 active:text-gray-300",
     },

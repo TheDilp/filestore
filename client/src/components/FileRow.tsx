@@ -45,142 +45,144 @@ export function FileRow({ id, title, type, createdAt, size }: Props) {
       params={{ path: `${params.path ? `${params.path}/` : ""}${title}` }}
     >
       <div
-        className={`pl-2 pr-4 py-4 hover:bg-secondary-highlight flex flex-col items-center group ${preview ? "h-fit" : "h-12"}`}
+        className={`pl-2 pr-0 py-4 hover:bg-secondary-highlight dark:hover:bg-primary  flex flex-col items-center group ${preview ? "h-fit" : "h-12"}`}
       >
         <div className="flex items-center h-full flex-nowrap gap-x-4 w-full">
           <div>
             <Icon icon={Icons[type]} color={getIconColor(type)} fontSize={22} />
           </div>
           <span>{title}</span>
-          <span className="ml-auto text-sm text-primary-highlight font-light flex items-center gap-x-4">
+          <span className="ml-auto text-sm text-primary-highlight font-light flex items-center gap-x-4 dark:text-white">
             <span>{getFileSize(size)}</span>
             <span className="text-xs">{formatDateTime(createdAt)}</span>
-            <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
-              <Button
-                isDisabled={!isPreviewable(type)}
-                onClick={async (e) => {
-                  e.preventDefault();
-                  if (
-                    isText(type) ||
-                    isCode(type) ||
-                    isVideo(type) ||
-                    type === "pdf"
-                  ) {
-                    const res = await fetchFunction<string>({
-                      model: "files",
-                      id,
-                      action: "read",
-                      method: "GET",
-                      urlSuffix: "link",
-                    });
-
-                    openPreviewDrawer({
-                      title,
-                      data: { id, url: res.data },
-                      type,
-                    });
-                  } else {
-                    if (preview) {
-                      if (audioRef.current) audioRef.current.pause();
-                      setPreview("");
-                      return;
-                    }
-
-                    const res = await fetchFunction<string>({
-                      model: "files",
-                      id,
-                      action: "read",
-                      method: "GET",
-                      urlSuffix: "link",
-                    });
-                    if (audioRef.current) audioRef.current.volume = 0.25;
-                    setPreview(res.data);
-                  }
-                }}
-                iconSize={20}
-                hasNoBorder
-                isOutline
-                icon={Icons.preview}
-              />
-            </div>
-            <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
-              <Button
-                iconSize={20}
-                onClick={async (e) => {
-                  e.preventDefault();
-                  const res = await fetchFunction<string>({
-                    model: "files",
-                    id,
-                    action: "read",
-                    method: "GET",
-                    urlSuffix: "link",
-                  });
-                  const link = res.data;
-                  window.navigator.clipboard.writeText(link);
-                  createNotification({
-                    title: "Link copied successfully.",
-                    variant: "success",
-                    icon: Icons.copy,
-                  });
-                }}
-                hasNoBorder
-                isOutline
-                icon={Icons.copy}
-              />
-            </div>
-            <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-100">
-              <Dropdown
-                allowedPlacements={["left", "right"]}
-                items={[
-                  {
-                    id: "download",
-                    title: "Download",
-                    isHidden: type === "folder",
-                    icon: Icons.download,
-                    onClick: async () => {
-                      const blob = await fileFetchFunction({
-                        id,
-                        searchParams: [["path", params.path || ""]],
-                      });
-                      const link = document.createElement("a");
-                      link.href = URL.createObjectURL(blob);
-                      link.download = title;
-                      link.click();
-                      URL.revokeObjectURL(link.href);
-                      link.remove();
-                    },
-                  },
-                  {
-                    id: "share",
-                    title: "Share",
-                    isHidden: type === "folder",
-                    icon: Icons.share,
-                    onClick: undefined,
-                  },
-                  {
-                    id: "delete",
-                    title: "Delete",
-                    icon: Icons.delete,
-                    onClick: async () => {
-                      await fetchFunction({
-                        model: "files",
-                        action: "delete",
-                        method: "DELETE",
-                        id,
-                      });
-                      queryClient.invalidateQueries({ queryKey: ["files"] });
-                    },
-                    iconColor: "red",
-                  },
-                ]}
-              >
+            <div className="flex items-center gap-x-4 w-0 group-hover:w-32 transition-(--fade-in-transition)">
+              <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto delay-100 group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
                 <Button
-                  onClick={(e) => e.preventDefault()}
+                  isDisabled={!isPreviewable(type)}
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    if (
+                      isText(type) ||
+                      isCode(type) ||
+                      isVideo(type) ||
+                      type === "pdf"
+                    ) {
+                      const res = await fetchFunction<string>({
+                        model: "files",
+                        id,
+                        action: "read",
+                        method: "GET",
+                        urlSuffix: "link",
+                      });
+
+                      openPreviewDrawer({
+                        title,
+                        data: { id, url: res.data },
+                        type,
+                      });
+                    } else {
+                      if (preview) {
+                        if (audioRef.current) audioRef.current.pause();
+                        setPreview("");
+                        return;
+                      }
+
+                      const res = await fetchFunction<string>({
+                        model: "files",
+                        id,
+                        action: "read",
+                        method: "GET",
+                        urlSuffix: "link",
+                      });
+                      if (audioRef.current) audioRef.current.volume = 0.25;
+                      setPreview(res.data);
+                    }
+                  }}
+                  iconSize={20}
                   hasNoBorder
                   isOutline
-                  icon={Icons.menu}
+                  icon={Icons.preview}
                 />
-              </Dropdown>
+              </div>
+              <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto delay-100 group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
+                <Button
+                  iconSize={20}
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    const res = await fetchFunction<string>({
+                      model: "files",
+                      id,
+                      action: "read",
+                      method: "GET",
+                      urlSuffix: "link",
+                    });
+                    const link = res.data;
+                    window.navigator.clipboard.writeText(link);
+                    createNotification({
+                      title: "Link copied successfully.",
+                      variant: "success",
+                      icon: Icons.copy,
+                    });
+                  }}
+                  hasNoBorder
+                  isOutline
+                  icon={Icons.copy}
+                />
+              </div>
+              <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-auto opacity-0 w-0 delay-100 transition-(--fade-in-transition) duration-100">
+                <Dropdown
+                  allowedPlacements={["left", "right"]}
+                  items={[
+                    {
+                      id: "download",
+                      title: "Download",
+                      isHidden: type === "folder",
+                      icon: Icons.download,
+                      onClick: async () => {
+                        const blob = await fileFetchFunction({
+                          id,
+                          searchParams: [["path", params.path || ""]],
+                        });
+                        const link = document.createElement("a");
+                        link.href = URL.createObjectURL(blob);
+                        link.download = title;
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+                        link.remove();
+                      },
+                    },
+                    {
+                      id: "share",
+                      title: "Share",
+                      isHidden: type === "folder",
+                      icon: Icons.share,
+                      onClick: undefined,
+                    },
+                    {
+                      id: "delete",
+                      title: "Delete",
+                      icon: Icons.delete,
+                      onClick: async () => {
+                        await fetchFunction({
+                          model: "files",
+                          action: "delete",
+                          method: "DELETE",
+                          id,
+                        });
+                        queryClient.invalidateQueries({ queryKey: ["files"] });
+                      },
+                      iconColor: "red",
+                    },
+                  ]}
+                >
+                  <Button
+                    onClick={(e) => e.preventDefault()}
+                    hasNoBorder
+                    isOutline
+                    icon={Icons.menu}
+                  />
+                </Dropdown>
+              </div>
             </div>
           </span>
         </div>

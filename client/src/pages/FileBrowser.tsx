@@ -19,6 +19,7 @@ import {
   useUpload,
 } from "../hooks";
 import { FileSchema } from "../schemas";
+import type { FileForUpload } from "../types";
 import { fetchFunction, getFileSize, groupBy } from "../utils";
 const sortOptions = [
   { id: "size", label: "Size", value: "size" },
@@ -59,7 +60,7 @@ const fields: (keyof zodInfer<typeof FileSchema>)[] = [
 ];
 const fieldString = fields.join("");
 function FileBrowser() {
-  const [files, setFiles] = useState<{ file: File; name: string }[]>([]);
+  const [files, setFiles] = useState<FileForUpload[]>([]);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState<{
     field: keyof zodInfer<typeof FileSchema>;
@@ -142,6 +143,7 @@ function FileBrowser() {
                         Array.from(e.files || []).map((file) => ({
                           name: file.name,
                           file,
+                          tags: [],
                         }))
                       )
                     );
@@ -158,7 +160,7 @@ function FileBrowser() {
                 isDisabled={!files?.length}
                 onClick={() =>
                   mutate(
-                    { files, path: params?.path },
+                    { files },
                     {
                       onSuccess: () => {
                         if (ref.current) {
@@ -197,39 +199,65 @@ function FileBrowser() {
             <ol className="pl-1.5 max-h-96 overflow-y-auto">
               {Array.from(files).map((file, idx) => (
                 <li
-                  className="py-1 flex items-center gap-x-8"
+                  className="py-1 flex flex-col"
                   key={file.file.name + file.file.type}
                 >
-                  <div className="grow">
-                    <Input
-                      name="name"
-                      value={file.name}
-                      variant={file.name ? "secondary" : "error"}
-                      helperText={
-                        file?.name ? "" : "File name cannot be empty."
-                      }
-                      onChange={(e) => {
-                        if (e.value)
-                          setFiles((prev) => {
-                            if (e.value) {
-                              const temp = [...prev];
-                              temp[idx].name = e.value;
-                              return temp;
-                            }
-                            return prev;
-                          });
-                      }}
-                    />
+                  <div className="py-1 flex flex-nowrap grow items-center gap-x-8">
+                    <div className="grow relative z-1">
+                      <Input
+                        name={`name[${idx}]`}
+                        value={file.name}
+                        variant={file.name ? "primary" : "error"}
+                        helperText={
+                          file?.name ? "" : "File name cannot be empty."
+                        }
+                        onChange={(e) => {
+                          if (e.value)
+                            setFiles((prev) => {
+                              if (e.value) {
+                                const temp = [...prev];
+                                temp[idx].name = e.value;
+                                return temp;
+                              }
+                              return prev;
+                            });
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm">
+                      {getFileSize(file.file.size)}
+                    </span>
+                    <div className="ml-auto">
+                      <Button
+                        size="lg"
+                        variant="error"
+                        isOutline
+                        icon={Icons.delete}
+                        onClick={() =>
+                          setFiles((prev) => prev.toSpliced(idx, 1))
+                        }
+                      />
+                    </div>
                   </div>
-                  <span className="text-sm">{getFileSize(file.file.size)}</span>
-                  <div className="ml-auto">
-                    <Button
-                      size="lg"
-                      variant="error"
-                      isOutline
-                      icon={Icons.delete}
-                      onClick={() => setFiles((prev) => prev.toSpliced(idx, 1))}
-                    />
+                  <div className="grow flex items-center">
+                    <div className="w-14 h-10 z-0 -top-5 left-0 border-secondary relative border-l border-b rounded-bl-lg" />
+                    <div className="grow pr-px">
+                      <Input
+                        size="sm"
+                        value={file.tags.join(",")}
+                        name={`tags[${idx}]`}
+                        onChange={(e) =>
+                          setFiles((prev) => {
+                            if (e.value === null) return prev;
+                            const temp = [...prev];
+                            temp[idx].tags = e.value.split(",");
+                            return temp;
+                          })
+                        }
+                        variant="secondary"
+                        placeholder="Enter tags as comma separated values (e.g. Task,Important,Due Tomorrow)"
+                      />
+                    </div>
                   </div>
                 </li>
               ))}

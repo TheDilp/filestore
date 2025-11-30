@@ -300,7 +300,7 @@ function FileBrowser() {
           </div>
         ) : (
           <div
-            className={`flex flex-col overflow-y-auto ${groupedBy ? "gap-y-4" : "divide-secondary divide-y"}`}
+            className={`flex flex-col overflow-y-auto ${groupedBy ? "gap-y-2 dark:gap-y-0" : "divide-secondary divide-y"}`}
           >
             {grouped
               ? Object.entries(grouped)

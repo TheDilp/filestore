@@ -59,6 +59,13 @@ const classes = tv({
         labelClasses: "text-error group-focus-within:text-error-highlight",
       },
     },
+    size: {
+      xs: "",
+      sm: "max-h-8",
+      md: "max-h-10",
+      lg: "",
+      xl: "",
+    },
     isLoading: {
       true: "bg-secondary",
     },
@@ -89,6 +96,7 @@ export function Input({
   variant = "primary",
   errors = [],
   suffix,
+  size = "md",
   accept = "image/png, image/jpeg, image/gif",
   isAutofocused,
   isMultiple,
@@ -101,6 +109,7 @@ export function Input({
     variant,
     type,
     isLoading,
+    size,
   });
   return (
     <div className={container()}>

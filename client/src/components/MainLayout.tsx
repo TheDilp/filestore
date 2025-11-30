@@ -11,7 +11,7 @@ type Props = {
 export function MainLayout({ children }: Props) {
   const notifications = useNotifications();
   return (
-    <main className="flex h-screen max-h-screen mx-auto flex-nowrap lg:container overflow-hidden overscroll-none dark:bg-primary-darkened">
+    <main className="flex h-screen max-h-screen mx-auto flex-nowrap lg:container bg-white overflow-hidden overscroll-none dark:bg-primary-darkened">
       <Drawer />
       <div className="absolute top-4 right-4 flex flex-col gap-y-2">
         {notifications.map((notification) => (

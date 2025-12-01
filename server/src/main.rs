@@ -103,7 +103,6 @@ async fn main() {
     //* Server Config
 
     // Server setup
-    // let rqw_client = ReqwestClient::new();
 
     let mut cors = CorsLayer::new()
         .allow_credentials(true)

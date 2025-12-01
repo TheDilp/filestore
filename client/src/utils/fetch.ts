@@ -39,9 +39,9 @@ export async function authFetchFunction<T>({
         headers:
           typeof body === "string"
             ? {
-                ...(headers || {}),
-                "Content-Type": "application/json",
-              }
+              ...(headers || {}),
+              "Content-Type": "application/json",
+            }
             : headers,
       }
     );
@@ -66,15 +66,16 @@ export async function fetchFunction<T>({
     `${import.meta.env.VITE_SERVER_URL}/api/v1/${model}/${action}${id ? `/${id}` : ""}${urlSuffix ? `/${urlSuffix}` : ""}`,
     {
       method,
+      timeout: 10 * 60 * 1000,
       body,
       credentials: "include",
       searchParams,
       headers:
         typeof body === "string"
           ? {
-              ...(headers || {}),
-              "Content-Type": "application/json",
-            }
+            ...(headers || {}),
+            "Content-Type": "application/json",
+          }
           : headers,
     }
   );

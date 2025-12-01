@@ -137,7 +137,7 @@ function FileBrowser() {
                   "image/*, audio/*, video/*"
                 }
                 onChange={(e) => {
-                  if (e.files)
+                  if (e.files) {
                     setFiles((prev) =>
                       prev.concat(
                         Array.from(e.files || []).map((file) => ({
@@ -147,6 +147,8 @@ function FileBrowser() {
                         }))
                       )
                     );
+                    if (ref.current) ref.current.value = "";
+                  }
                 }}
                 name="files"
                 value=""

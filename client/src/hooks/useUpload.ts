@@ -17,9 +17,10 @@ async function uploadFiles(
   if (!files) return;
   const formData = new FormData();
   const path = ctx?.meta?.path as string | undefined;
-  for (let index = 0; index < files.length; index++)
+  for (let index = 0; index < files.length; index++) {
     formData.append(`file${index}`, files[index].file, files[index].name);
-
+    formData.append(`file${index}.tags`, JSON.stringify(files[index].tags));
+  }
   const res = await fetchFunction({
     model: "files",
     action: "upload",

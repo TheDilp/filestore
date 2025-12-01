@@ -1,4 +1,4 @@
-use std::{any::type_name, str::FromStr, time::Duration};
+use std::{str::FromStr, time::Duration};
 
 use aws_sdk_s3::presigning::PresigningConfig;
 use axum::{
@@ -67,10 +67,6 @@ impl FileQuery {
 #[derive(Deserialize)]
 struct InsertFolder {
     title: String,
-}
-
-fn type_of<T>(_: T) -> &'static str {
-    type_name::<T>()
 }
 
 async fn upload_file_route(

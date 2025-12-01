@@ -1,4 +1,17 @@
 services:
+  server:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+      target: runtime
+    command: ["./server"]
+    env_file:
+      - path: .env
+    ports:
+      - "4000:4000"
+    restart: always
+    networks:
+      - dokploy-network
   dragonflydb:
     image: "docker.dragonflydb.io/dragonflydb/dragonfly"
     restart: unless-stopped

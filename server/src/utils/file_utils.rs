@@ -9,9 +9,10 @@ use crate::{
 pub async fn upload_file(
     state: &AppState,
     field: Field<'_>,
+    title: &String,
     file_path: &String,
     is_public: &bool,
-) -> Result<(String, FileTypes, i64), bool> {
+) -> Result<(FileTypes, i64), bool> {
     let mut size: i64 = 0;
     let mut data = Vec::new();
     let mut stream = field;
@@ -31,8 +32,7 @@ pub async fn upload_file(
 
     tracing::debug!("UPLOADING FILE TYPE ========> {:?}", content_type);
 
-    let name = stream.file_name().unwrap_or("unnamed").to_string();
-    if name == "unnamed" {
+    if title == "unnamed" {
         tracing::error!("Unnamed file SKIPPING - {}", file_path);
         return Err(false);
     }
@@ -55,7 +55,7 @@ pub async fn upload_file(
         .await;
 
     if upload.is_ok() {
-        Ok((name, FileTypes::from_mime(content_type.as_str()), size))
+        Ok((FileTypes::from_mime(content_type.as_str()), size))
     } else {
         tracing::error!("ERROR UPLOADING FILE - {}", upload.err().unwrap());
         Err(false)

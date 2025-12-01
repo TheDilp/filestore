@@ -1,4 +1,4 @@
-use std::{str::FromStr, time::Duration};
+use std::{any::type_name, str::FromStr, time::Duration};
 
 use aws_sdk_s3::presigning::PresigningConfig;
 use axum::{
@@ -69,6 +69,10 @@ struct InsertFolder {
     title: String,
 }
 
+fn type_of<T>(_: T) -> &'static str {
+    type_name::<T>()
+}
+
 async fn upload_file_route(
     State(state): State<AppState>,
     Extension(session): Extension<AuthSession>,
@@ -97,17 +101,72 @@ async fn upload_file_route(
         .map_err(|err| AppError::default_response(err))?
     {
         debug!("ENTERED WHILE LOOP FOR FIELDS");
-
+        let field_name = field.name().unwrap_or_default();
+        if field_name.is_empty() {
+            continue;
+        }
         let file_id = Uuid::new_v4();
-        let string_id = &file_id.to_string();
-        let title = field.file_name().unwrap_or(string_id);
+        let title = field
+            .file_name()
+            .map(|s| s.to_string())
+            .unwrap_or(file_id.to_string());
+
+        if field_name.ends_with(".tags") {
+            let mut tag_statement = String::from("INSERT INTO tags (owner_id, title) VALUES ");
+            let tags = field.text().await;
+
+            if let Ok(tags) = tags {
+                if tags.is_empty() {
+                    continue;
+                }
+                let tags: Result<Vec<String>, serde_json::Error> = serde_json::from_str(&tags);
+
+                if tags.is_err() {
+                    tracing::error!("ERROR PARSING TAGS - {}", tags.err().unwrap());
+                    continue;
+                }
+
+                let tags = tags.unwrap();
+                let tag_count = tags.len();
+                let mut inputs = vec![session.user.id.to_string()];
+                for (idx, tag) in tags.into_iter().enumerate() {
+                    tag_statement.push_str(&format!("($1, ${})", idx + 2));
+                    if idx < tag_count - 1 {
+                        tag_statement.push_str(", ");
+                    }
+                    if idx == tag_count - 1 {
+                        tag_statement.push_str(" ON CONFLICT (title, owner_id) DO NOTHING;");
+                    }
+                    inputs.push(String::from(tag.trim()));
+                }
+
+                let inputs_dyn: Vec<Box<dyn ToSql + Sync + Send>> = inputs
+                    .iter()
+                    .filter_map(convert_filter_type)
+                    .collect::<Vec<_>>();
+
+                let inputs_dyn = inputs_dyn
+                    .iter()
+                    .map(|input| input.as_ref() as &(dyn ToSql + Sync))
+                    .collect::<Vec<_>>();
+
+                tx.execute(&tag_statement, &inputs_dyn)
+                    .await
+                    .map_err(|err| AppError::db_error(err))?;
+                continue;
+            } else if tags.is_err() {
+                tracing::error!("ERROR PARSING TAGS - {}", tags.err().unwrap());
+                continue;
+            }
+            continue;
+        }
 
         let file_path = format!("{}{}", &query.format_path(), &title);
 
         debug!("BEGIN FILE UPLOAD");
-        let upload_result = upload_file(&state, field, &file_path, &query.is_public).await;
+        let upload_result = upload_file(&state, field, &title, &file_path, &query.is_public).await;
         debug!("END FILE UPLOAD");
-        if let Ok((title, file_type, size)) = upload_result {
+        if let Ok((file_type, size)) = upload_result {
             //TODO: Optimize by using batch insert
             let db_result = tx
                 .execute(

@@ -30,7 +30,7 @@ const classes = tv({
     base: "flex flex-1 items-center max-h-full gap-x-2 overflow-hidden rounded-lg border bg-white dark:bg-primary outline-1 outline-transparent",
     labelClasses: "max-h-4 text-sm",
     container: "group flex flex-col gap-y-1",
-    inputClasses: "h-10 max-h-10 min-h-10 w-full px-2 outline-0",
+    inputClasses: "h-10 max-h-10 min-h-10 w-full px-2 outline-0 ",
   },
   variants: {
     variant: {
@@ -73,7 +73,7 @@ const classes = tv({
       file: {
         base: "border-secondary",
         inputClasses:
-          "file:border-0 file:font-medium pr-4 pl-0 file:bg-primary file:text-white file:py-2.5 file:relative text-sm file:border-r file:border-secondary file:px-2",
+          "file:border-0 text-white file:font-medium pr-4 pl-0 file:bg-primary file:text-white file:py-2.5 file:relative text-sm file:border-r file:border-secondary file:px-2",
       },
       number: {},
       text: {},

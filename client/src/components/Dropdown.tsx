@@ -5,10 +5,10 @@ import {
   FloatingList,
   FloatingNode,
   FloatingPortal,
+  size as floatingSize,
   FloatingTree,
   offset,
   safePolygon,
-  size as floatingSize,
   useClick,
   useDismiss,
   useFloating,
@@ -69,7 +69,8 @@ const DropdownItemClasses = tv({
   base: "group border-secondary py-2 font-medium text-primary text-sm group-hover:bg-secondary-highlight m-0 active:bg-secondary flex w-full cursor-pointer flex-nowrap items-center justify-center truncate border-b px-4 text-left outline-0 transition-colors last:border-0",
   variants: {
     variant: {
-      primary: "bg-white text-primary",
+      primary:
+        "bg-white text-primary dark:bg-primary-highlight dark:text-white",
       secondary: "bg-secondary text-primary-highlight",
       info: "bg-info",
       success: "bg-success",

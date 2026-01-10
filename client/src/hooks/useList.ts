@@ -1,8 +1,11 @@
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 
 import { Models } from "../enums";
-import type { FormattedEntity } from "../types";
-import type { RequestFilters, RequestPagination } from "../types";
+import type {
+  FormattedEntity,
+  RequestFilters,
+  RequestPagination,
+} from "../types";
 import { fetchFunction, getSearchParams } from "../utils";
 
 export type useListProps<F> = {
@@ -36,7 +39,7 @@ export function useList<F extends Record<string, unknown>, O = F>(
     urlSuffix?: string;
     urlPrefix?: string;
     searchParams?: string[][];
-  },
+  }
 ) {
   const searchParams = getSearchParams<F>({
     fields,
@@ -54,7 +57,7 @@ export function useList<F extends Record<string, unknown>, O = F>(
       )
         searchParams.append(
           options?.searchParams?.[index]?.[0] || "",
-          options?.searchParams?.[index]?.[1] || "",
+          options?.searchParams?.[index]?.[1] || ""
         );
 
   return useQuery<F[], Error, O[]>({

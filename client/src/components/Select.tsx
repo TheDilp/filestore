@@ -112,7 +112,7 @@ export function Select({
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions(
-    [dismiss, role, listNav, click],
+    [dismiss, role, listNav, click]
   );
 
   const { base, labelClasses, container, optionsContainer } = classes({
@@ -126,7 +126,8 @@ export function Select({
     <div className={container()}>
       {title ? <label className={labelClasses()}>{title}</label> : null}
 
-      <div
+      <button
+        type="button"
         ref={refs.setReference}
         className={base()}
         {...getReferenceProps()}
@@ -134,7 +135,7 @@ export function Select({
       >
         <span className="font-medium">{selectedLabel || "Select"}</span>
         <Icon color="#a1a1aa" fontSize={24} icon={Icons.arrowDown} />
-      </div>
+      </button>
       {isOpen ? (
         <FloatingPortal>
           <FloatingFocusManager context={context} modal={false}>

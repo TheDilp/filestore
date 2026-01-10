@@ -74,6 +74,7 @@ export default defineConfig([
       "import/no-cycle": "error",
       "no-console": ["error", { allow: ["info", "error"] }],
       camelcase: ["error"],
+      "jsx-a11y/media-has-caption": "off",
       "prettier/prettier": [
         "error",
         {

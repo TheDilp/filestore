@@ -98,7 +98,6 @@ export function Input({
   suffix,
   size = "md",
   accept = "image/png, image/jpeg, image/gif",
-  isAutofocused,
   isMultiple,
   isLoading,
   min,
@@ -125,7 +124,6 @@ export function Input({
         <input
           ref={ref}
           accept={accept}
-          autoFocus={isAutofocused}
           className={inputClasses()}
           max={max}
           min={min}

@@ -1,10 +1,10 @@
-import { createLazyRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { email, object, string } from "zod";
 
 import { Icon } from "../components";
 import { authFetchFunction, useAppForm } from "../utils";
 
-function Register() {
+export function Register() {
   const navigate = useNavigate();
   const form = useAppForm({
     defaultValues: {
@@ -162,7 +162,3 @@ function Register() {
     </div>
   );
 }
-
-export const registerLazyRoute = createLazyRoute("/auth/register")({
-  component: Register,
-});

@@ -1,9 +1,4 @@
-import {
-  createLazyRoute,
-  Link,
-  useNavigate,
-  useSearch,
-} from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useSetAtom } from "jotai";
 import { type infer as zodInfer, object, string } from "zod";
 
@@ -13,7 +8,7 @@ import { LoginSchema, LoginSearchParamsSchema } from "../schemas";
 import type { BaseAuthCallbackType } from "../types";
 import { authFetchFunction, useAppForm } from "../utils";
 
-function Login() {
+export function Login() {
   const params = useSearch({ from: "/auth/login", strict: true }) as zodInfer<
     typeof LoginSearchParamsSchema
   >;
@@ -117,7 +112,3 @@ function Login() {
     </div>
   );
 }
-
-export const loginLazyRoute = createLazyRoute("/auth/login")({
-  component: Login,
-});

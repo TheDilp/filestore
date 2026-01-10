@@ -1,4 +1,4 @@
-import { createLazyRoute, useParams } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { Fragment, useRef, useState } from "react";
 import type { infer as zodInfer } from "zod";
 
@@ -59,7 +59,7 @@ const fields: (keyof zodInfer<typeof FileSchema>)[] = [
   "createdAt",
 ];
 const fieldString = fields.join("");
-function FileBrowser() {
+export function FileBrowser() {
   const [files, setFiles] = useState<FileForUpload[]>([]);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState<{
@@ -100,7 +100,7 @@ function FileBrowser() {
     },
     {
       searchParams: [["path", params?.path || ""]],
-    },
+    }
   );
 
   const { mutate, isPending } = useUpload();
@@ -145,8 +145,8 @@ function FileBrowser() {
                           name: file.name,
                           file,
                           tags: [],
-                        })),
-                      ),
+                        }))
+                      )
                     );
                     if (ref.current) ref.current.value = "";
                   }
@@ -178,7 +178,7 @@ function FileBrowser() {
                           });
                         }
                       },
-                    },
+                    }
                   )
                 }
                 title="Upload"
@@ -429,7 +429,3 @@ function FileBrowser() {
     </div>
   );
 }
-
-export const fileBrowserLazyRoute = createLazyRoute("/browser/{-$path}")({
-  component: FileBrowser,
-});

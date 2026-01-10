@@ -100,7 +100,7 @@ export function FileBrowser() {
     },
     {
       searchParams: [["path", params?.path || ""]],
-    }
+    },
   );
 
   const { mutate, isPending } = useUpload();
@@ -145,8 +145,8 @@ export function FileBrowser() {
                           name: file.name,
                           file,
                           tags: [],
-                        }))
-                      )
+                        })),
+                      ),
                     );
                     if (ref.current) ref.current.value = "";
                   }
@@ -178,7 +178,7 @@ export function FileBrowser() {
                           });
                         }
                       },
-                    }
+                    },
                   )
                 }
                 title="Upload"

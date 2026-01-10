@@ -39,7 +39,7 @@ export function useList<F extends Record<string, unknown>, O = F>(
     urlSuffix?: string;
     urlPrefix?: string;
     searchParams?: string[][];
-  }
+  },
 ) {
   const searchParams = getSearchParams<F>({
     fields,
@@ -57,7 +57,7 @@ export function useList<F extends Record<string, unknown>, O = F>(
       )
         searchParams.append(
           options?.searchParams?.[index]?.[0] || "",
-          options?.searchParams?.[index]?.[1] || ""
+          options?.searchParams?.[index]?.[1] || "",
         );
 
   return useQuery<F[], Error, O[]>({

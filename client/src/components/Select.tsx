@@ -112,7 +112,7 @@ export function Select({
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions(
-    [dismiss, role, listNav, click]
+    [dismiss, role, listNav, click],
   );
 
   const { base, labelClasses, container, optionsContainer } = classes({
@@ -127,9 +127,9 @@ export function Select({
       {title ? <label className={labelClasses()}>{title}</label> : null}
 
       <button
-        type="button"
         ref={refs.setReference}
         className={base()}
+        type="button"
         {...getReferenceProps()}
         tabIndex={0}
       >

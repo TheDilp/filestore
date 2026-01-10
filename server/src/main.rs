@@ -28,7 +28,7 @@ use crate::{
     middleware::session_middleware::session_middleware,
     models::state::AppState,
     routes::{auth_routes::auth_routes, file_routes::file_routes},
-    utils::{db_utils::db_init_setup, storage_utils::configure_lifecycle_rules},
+    utils::db_utils::db_init_setup,
 };
 mod consts;
 mod enums;
@@ -50,6 +50,7 @@ async fn main() {
         .with(filter)
         .with(fmt::layer())
         .init();
+    let port = var("PORT").unwrap_or(String::from("3000"));
 
     let server_url = var("SERVER_URL").expect("Env var `SERVER_URL` not set");
     let db_url = var("DATABASE_URL").expect("Env var `DATABASE_URL` not set");
@@ -95,10 +96,6 @@ async fn main() {
         .build();
 
     let s3_client = aws_sdk_s3::Client::from_conf(config);
-
-    configure_lifecycle_rules(&s3_client, &s3_name)
-        .await
-        .expect("FAILED TO CONFIGURE BUCKET LIFECYCLE RULES");
 
     //* Server Config
 
@@ -189,8 +186,8 @@ async fn main() {
             }),
         )
         .layer(cors);
-    // run our app with hyper, listening globally on port 3000
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
+
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port))
         .await
         .expect("LISTENER NOT BOUND.");
     axum::serve(listener, app)

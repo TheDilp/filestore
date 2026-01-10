@@ -3,3 +3,4 @@ target
 dev-target
 .env
 .envrc
+.DS_Store

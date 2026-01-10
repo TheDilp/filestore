@@ -13,7 +13,7 @@ import { LoginSearchParamsSchema } from "./schemas";
 import type { BaseAuthCallbackType } from "./types";
 import { authFetchFunction } from "./utils";
 
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
@@ -64,20 +64,7 @@ const rootRoute = createRootRoute({
 });
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  loader: (ctx) => {
-    if (
-      !ctx.context.auth.user &&
-      !ctx.location.pathname.endsWith("/auth/login") &&
-      !ctx.location.pathname.endsWith("/auth/register")
-    )
-      throw redirect({ to: "/auth/login" });
-    if (
-      !!ctx.context.auth.user?.id &&
-      ctx.location.pathname.endsWith("/auth/login")
-    )
-      throw redirect({ to: "/browser/{-$path}" });
-  },
-  path: "/",
+  path: "/browser",
   component: () => (
     <QueryClientProvider client={queryClient}>
       <MainLayout>
@@ -123,7 +110,7 @@ const loginRoute = createRoute({
 
 const browserRoute = createRoute({
   getParentRoute: () => indexRoute,
-  path: "/browser/{-$path}",
+  path: "/{-$path}",
 }).lazy(() =>
   import("./pages/FileBrowser").then((d) => d.fileBrowserLazyRoute)
 );

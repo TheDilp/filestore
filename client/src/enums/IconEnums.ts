@@ -47,6 +47,8 @@ export const Icons = {
   notification: "ph:bell" as const,
   ogg: "mdi-light:file" as const,
   otf: "bi:filetype-otf" as const,
+  opus: "material-symbols-light:audio-file-outline" as const,
+  flac: "material-symbols-light:audio-file-outline" as const,
   pdf: "bi:filetype-pdf" as const,
   php: "bi:filetype-php" as const,
   png: "bi:filetype-png" as const,

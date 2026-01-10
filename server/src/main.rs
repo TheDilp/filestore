@@ -224,7 +224,7 @@ async fn main() {
         .with(fmt::layer())
         .init();
     let port = var("PORT").unwrap_or(String::from("3000"));
-
+    let root = var("ROOT").unwrap_or_default();
     let server_url = var("SERVER_URL").expect("Env var `SERVER_URL` not set");
     let db_url = var("DATABASE_URL").expect("Env var `DATABASE_URL` not set");
     let client_url = var("CLIENT_URL").expect("Env var `CLIENT_URL` not set");
@@ -328,6 +328,7 @@ async fn main() {
         s3_provider,
         cdn_endpoint,
         environment,
+        root,
     };
 
     let _ = db_init_setup(&state).await;

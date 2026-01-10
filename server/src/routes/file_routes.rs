@@ -1,4 +1,4 @@
-use std::{str::FromStr, time::Duration};
+use std::{ops::Not, str::FromStr, time::Duration};
 
 use aws_sdk_s3::presigning::PresigningConfig;
 use axum::{
@@ -55,9 +55,11 @@ struct FileQuery {
 }
 
 impl FileQuery {
-    fn format_path(&self) -> String {
+    fn format_path(&self, root: &str) -> String {
         if self.path.is_empty() {
-            String::from("")
+            root.to_string()
+        } else if root.is_empty().not() {
+            format!("{}/{}/", root, self.path)
         } else {
             format!("{}/", self.path)
         }
@@ -157,7 +159,7 @@ async fn upload_file_route(
             continue;
         }
 
-        let file_path = format!("{}{}", &query.format_path(), &title);
+        let file_path = format!("{}{}", &query.format_path(&state.root), &title);
 
         debug!("BEGIN FILE UPLOAD");
         let upload_result = upload_file(&state, field, &title, &file_path, &query.is_public).await;
@@ -173,7 +175,7 @@ async fn upload_file_route(
                         &session.user.id,
                         &size,
                         &file_type.to_string(),
-                        &query.path,
+                        &query.format_path(&state.root),
                         &query.is_public,
                         &hash.to_string(),
                     ],
@@ -253,7 +255,7 @@ async fn download_file(
         .s3_client
         .get_object()
         .bucket(&state.s3_name)
-        .key(format!("{}{}", &query.format_path(), title))
+        .key(format!("{}{}", &query.format_path(&state.root), title))
         .send()
         .await
         .map_err(|err| AppError::s3_error(err))?;
@@ -298,8 +300,8 @@ async fn generate_link(
             region = state.s3_region,
             path = path
                 .map(|p| match p.is_empty() {
-                    true => p,
-                    false => format!("{}/", p),
+                    true => state.root.to_string(),
+                    false => format!("{}/{}/", &state.root, p),
                 })
                 .unwrap_or_default(),
             id = title
@@ -392,7 +394,7 @@ async fn delete_file(
     .await
     .map_err(|err| AppError::db_error(err))?;
 
-    let key = format!("{}{}", &query.format_path(), id);
+    let key = format!("{}{}", &query.format_path(&state.root), id);
     state
         .s3_client
         .delete_object()

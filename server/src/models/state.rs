@@ -30,6 +30,7 @@ pub struct AppState {
     pub s3_region: String,
     pub s3_provider: String,
     pub cdn_endpoint: String,
+    pub root: String,
     pub environment: Environment,
 }
 

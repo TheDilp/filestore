@@ -61,7 +61,7 @@ function Login() {
   return (
     <div className="border-primary flex h-fit w-96 flex-col rounded-xl border bg-white p-4 shadow-md">
       <div className="flex w-full justify-center">
-        <Icon icon="arcticons:realityscan" fontSize={56} />
+        <Icon fontSize={56} icon="arcticons:realityscan" />
       </div>
       <h2 className="text-center text-2xl font-medium">Welcome back</h2>
       <form
@@ -71,43 +71,43 @@ function Login() {
         }}
       >
         <form.AppField
-          name="username"
           children={(field) => (
             <field.Input
-              onChange={(e) => field.handleChange(e.value || "")}
-              name={field.name}
-              value={field.state.value}
-              title="Username"
               errors={field.state.meta.errors}
+              name={field.name}
+              onChange={(e) => field.handleChange(e.value || "")}
+              title="Username"
+              value={field.state.value}
             />
           )}
+          name="username"
         />
         <form.AppField
-          name="password"
           children={(field) => (
             <field.Input
-              value={field.state.value}
+              errors={field.state.meta.errors}
+              name={field.name}
               onChange={(e) => field.handleChange(e.value || "")}
               title="Password"
-              name={field.name}
               type="password"
-              errors={field.state.meta.errors}
+              value={field.state.value}
             />
           )}
+          name="password"
         />
         <div className="mb-2 mt-auto flex w-full flex-col gap-y-1">
-          <Link to="/auth/register" className="w-full text-right">
+          <Link className="w-full text-right" to="/auth/register">
             <span className="text-blue-400">Register now</span>
           </Link>
           <form.AppForm>
             <form.Subscribe
               children={(child) => (
                 <form.Button
+                  isDisabled={!child.canSubmit}
                   isFullWidth
+                  onClick={form.handleSubmit}
                   title="Sign in"
                   variant="success"
-                  onClick={form.handleSubmit}
-                  isDisabled={!child.canSubmit}
                 />
               )}
             />

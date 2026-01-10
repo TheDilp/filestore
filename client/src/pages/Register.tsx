@@ -57,7 +57,7 @@ function Register() {
   return (
     <div className="border-primary flex h-fit w-96 flex-col rounded-xl border bg-white p-4 shadow-md">
       <div className="flex w-full justify-center">
-        <Icon icon="arcticons:realityscan" fontSize={56} />
+        <Icon fontSize={56} icon="arcticons:realityscan" />
       </div>
 
       <h2 className="text-center text-2xl font-medium">Register</h2>
@@ -68,92 +68,92 @@ function Register() {
         }}
       >
         <form.AppField
-          name="firstName"
           children={(field) => (
             <field.Input
-              onChange={(e) => field.handleChange(e.value || "")}
+              errors={field.state.meta.errors}
               name={field.name}
-              value={field.state.value}
+              onChange={(e) => field.handleChange(e.value || "")}
               title="First name"
-              errors={field.state.meta.errors}
+              value={field.state.value}
             />
           )}
+          name="firstName"
         />
         <form.AppField
-          name="lastName"
           children={(field) => (
             <field.Input
-              onChange={(e) => field.handleChange(e.value || "")}
+              errors={field.state.meta.errors}
               name={field.name}
-              value={field.state.value}
+              onChange={(e) => field.handleChange(e.value || "")}
               title="Last name"
-              errors={field.state.meta.errors}
+              value={field.state.value}
             />
           )}
+          name="lastName"
         />
         <form.AppField
-          name="username"
           children={(field) => (
             <field.Input
-              onChange={(e) => field.handleChange(e.value || "")}
+              errors={field.state.meta.errors}
               name={field.name}
-              value={field.state.value}
+              onChange={(e) => field.handleChange(e.value || "")}
               title="Username"
-              errors={field.state.meta.errors}
+              value={field.state.value}
             />
           )}
+          name="username"
         />
         <form.AppField
-          name="email"
           children={(field) => (
             <field.Input
-              onChange={(e) => field.handleChange(e.value || "")}
+              errors={field.state.meta.errors}
               name={field.name}
-              value={field.state.value}
+              onChange={(e) => field.handleChange(e.value || "")}
               title="Email"
               type="email"
-              errors={field.state.meta.errors}
+              value={field.state.value}
             />
           )}
+          name="email"
         />
         <form.AppField
-          name="password1"
           children={(field) => (
             <field.Input
-              onChange={(e) => field.handleChange(e.value || "")}
+              errors={field.state.meta.errors}
               name={field.name}
-              value={field.state.value}
+              onChange={(e) => field.handleChange(e.value || "")}
               title="Password"
               type="password"
-              errors={field.state.meta.errors}
+              value={field.state.value}
             />
           )}
+          name="password1"
         />
         <form.AppField
-          name="password2"
           children={(field) => (
             <field.Input
-              onChange={(e) => field.handleChange(e.value || "")}
+              errors={field.state.meta.errors}
               name={field.name}
-              value={field.state.value}
+              onChange={(e) => field.handleChange(e.value || "")}
               title="Password confirm"
               type="password"
-              errors={field.state.meta.errors}
+              value={field.state.value}
             />
           )}
+          name="password2"
         />
         <form.AppForm>
-          <Link to="/auth/login" className="w-full text-right">
+          <Link className="w-full text-right" to="/auth/login">
             <span className="text-blue-400">Login</span>
           </Link>
           <form.Subscribe
             children={(child) => (
               <form.Button
+                isDisabled={!child.canSubmit}
                 isFullWidth
+                onClick={form.handleSubmit}
                 title="Register"
                 variant="success"
-                onClick={form.handleSubmit}
-                isDisabled={!child.canSubmit}
               />
             )}
           />

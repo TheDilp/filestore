@@ -89,7 +89,7 @@ export function Notification({
       () => {
         removeNotification(id);
       },
-      timer * 1000 + 550
+      timer * 1000 + 550,
     );
 
     return () => {

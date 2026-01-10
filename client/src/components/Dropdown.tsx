@@ -5,10 +5,10 @@ import {
   FloatingList,
   FloatingNode,
   FloatingPortal,
-  size as floatingSize,
   FloatingTree,
   offset,
   safePolygon,
+  size as floatingSize,
   useClick,
   useDismiss,
   useFloating,
@@ -279,7 +279,7 @@ function DropdownComponent({
                                   : undefined
                               }
                               subItems={dropdownItem.subItems.filter(
-                                (subItem) => !subItem.isHidden
+                                (subItem) => !subItem.isHidden,
                               )}
                               title={dropdownItem.title}
                               tooltip={dropdownItem?.tooltip}
@@ -318,7 +318,7 @@ function DropdownComponent({
                             tooltip={dropdownItem?.tooltip}
                             variant={dropdownItem?.variant || "primary"}
                           />
-                        )
+                        ),
                       )
                     : null}
                 </div>

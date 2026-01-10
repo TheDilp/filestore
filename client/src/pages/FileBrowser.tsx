@@ -100,7 +100,7 @@ function FileBrowser() {
     },
     {
       searchParams: [["path", params?.path || ""]],
-    }
+    },
   );
 
   const { mutate, isPending } = useUpload();
@@ -116,11 +116,11 @@ function FileBrowser() {
         <h1 className="text-3xl font-bold absolute">Filestore</h1>
         <div className="ml-auto right-0.5 relative">
           <Button
-            onClick={() => changeMode(mode === "dark" ? "light" : "dark")}
-            icon={mode === "dark" ? Icons.moon : Icons.sun}
-            isOutline
             hasNoBorder
+            icon={mode === "dark" ? Icons.moon : Icons.sun}
             iconSize={28}
+            isOutline
+            onClick={() => changeMode(mode === "dark" ? "light" : "dark")}
           />
         </div>
       </div>
@@ -130,12 +130,13 @@ function FileBrowser() {
             <div className="h-10 grow">
               <Input
                 ref={ref}
-                isMultiple
-                isDisabled={isPending}
                 accept={
                   import.meta.env.VITE_ACCEPT_FILE_TYPES ||
                   "image/*, audio/*, video/*"
                 }
+                isDisabled={isPending}
+                isMultiple
+                name="files"
                 onChange={(e) => {
                   if (e.files) {
                     setFiles((prev) =>
@@ -144,22 +145,23 @@ function FileBrowser() {
                           name: file.name,
                           file,
                           tags: [],
-                        }))
-                      )
+                        })),
+                      ),
                     );
                     if (ref.current) ref.current.value = "";
                   }
                 }}
-                name="files"
-                value=""
                 type="file"
+                value=""
               />
             </div>
             <div className="h-full flex items-center">
               <Button
-                iconSize={16}
+                icon={Icons.upload}
                 iconPosition="left"
+                iconSize={16}
                 isDisabled={!files?.length}
+                isLoading={isPending}
                 onClick={() =>
                   mutate(
                     { files },
@@ -176,23 +178,21 @@ function FileBrowser() {
                           });
                         }
                       },
-                    }
+                    },
                   )
                 }
                 title="Upload"
                 variant="primary"
-                isLoading={isPending}
-                icon={Icons.upload}
               />
             </div>
             <div>
               <Button
-                title="New folder"
                 icon={Icons.folder}
                 onClick={() => {
                   const title = prompt("Enter folder name");
                   if (title) createFolder(title, params.path || "", refetch);
                 }}
+                title="New folder"
               />
             </div>
           </div>
@@ -201,18 +201,16 @@ function FileBrowser() {
             <ol className="pl-1.5 max-h-96 overflow-y-auto">
               {Array.from(files).map((file, idx) => (
                 <li
-                  className="py-1 flex flex-col"
                   key={file.file.name + file.file.type}
+                  className="py-1 flex flex-col"
                 >
                   <div className="py-1 flex flex-nowrap grow items-center gap-x-8">
                     <div className="grow relative z-1">
                       <Input
-                        name={`name[${idx}]`}
-                        value={file.name}
-                        variant={file.name ? "primary" : "error"}
                         helperText={
                           file?.name ? "" : "File name cannot be empty."
                         }
+                        name={`name[${idx}]`}
                         onChange={(e) => {
                           if (e.value)
                             setFiles((prev) => {
@@ -224,6 +222,8 @@ function FileBrowser() {
                               return prev;
                             });
                         }}
+                        value={file.name}
+                        variant={file.name ? "primary" : "error"}
                       />
                     </div>
                     <span className="text-sm">
@@ -231,13 +231,13 @@ function FileBrowser() {
                     </span>
                     <div className="ml-auto">
                       <Button
-                        size="lg"
-                        variant="error"
-                        isOutline
                         icon={Icons.delete}
+                        isOutline
                         onClick={() =>
                           setFiles((prev) => prev.toSpliced(idx, 1))
                         }
+                        size="lg"
+                        variant="error"
                       />
                     </div>
                   </div>
@@ -245,8 +245,6 @@ function FileBrowser() {
                     <div className="w-14 h-10 z-0 -top-5 left-0 border-secondary relative border-l border-b rounded-bl-lg" />
                     <div className="grow pr-px">
                       <Input
-                        size="sm"
-                        value={file.tags.join(",")}
                         name={`tags[${idx}]`}
                         onChange={(e) =>
                           setFiles((prev) => {
@@ -256,8 +254,10 @@ function FileBrowser() {
                             return temp;
                           })
                         }
-                        variant="secondary"
                         placeholder="Enter tags as comma separated values (e.g. Task,Important,Due Tomorrow)"
+                        size="sm"
+                        value={file.tags.join(",")}
+                        variant="secondary"
                       />
                     </div>
                   </div>
@@ -279,19 +279,19 @@ function FileBrowser() {
                 onChange={(e) => {
                   if (e.value !== null) setSearch(e.value);
                 }}
-                value={search}
-                type="search"
-                variant="secondary"
                 placeholder="Search"
+                type="search"
+                value={search}
+                variant="secondary"
               />
             </div>
             <div className="w-30">
               <Select
-                options={groupOptions}
+                name="group"
                 onChange={(e) => {
                   setGroupedBy(e.value as "type" | null);
                 }}
-                name="group"
+                options={groupOptions}
                 title="Group"
                 value={groupedBy}
                 variant="secondary"
@@ -299,46 +299,46 @@ function FileBrowser() {
             </div>
             <div className="w-46">
               <Select
-                options={sortOptions}
+                name="sort"
                 onChange={(e) => {
                   setSort({
                     field: e.value as keyof zodInfer<typeof FileSchema>,
                     type: sort.type,
                   });
                 }}
-                name="sort"
-                value={sort.field}
+                options={sortOptions}
                 title="Sort"
+                value={sort.field}
                 variant="secondary"
               />
             </div>
 
             <Button
-              isOutline
               icon={
                 sort.type === "asc" ? Icons.arrowUpSort : Icons.arrowDownSort
               }
-              size="xl"
+              isOutline
               onClick={() =>
                 setSort((prev) => ({
                   ...prev,
                   type: prev.type === "asc" ? "desc" : "asc",
                 }))
               }
+              size="xl"
             />
             <Button
-              isOutline={view !== "grid"}
-              size="xl"
               icon={Icons.grid}
-              variant={view === "grid" ? "info" : "secondary"}
+              isOutline={view !== "grid"}
               onClick={() => setView("grid")}
+              size="xl"
+              variant={view === "grid" ? "info" : "secondary"}
             />
             <Button
               icon={Icons.list}
-              size="xl"
               isOutline={view !== "list"}
-              variant={view === "list" ? "info" : "secondary"}
               onClick={() => setView("list")}
+              size="xl"
+              variant={view === "list" ? "info" : "secondary"}
             />
           </div>
         </div>
@@ -360,11 +360,11 @@ function FileBrowser() {
                         {value.map((item) => (
                           <FileCard
                             key={item.id}
-                            id={item.id}
-                            title={item.title}
                             createdAt={item.createdAt}
-                            type={item.type}
+                            id={item.id}
                             size={item.size}
+                            title={item.title}
+                            type={item.type}
                           />
                         ))}
                       </Fragment>
@@ -373,11 +373,11 @@ function FileBrowser() {
               : data.map((item) => (
                   <FileCard
                     key={item.id}
-                    id={item.id}
-                    title={item.title}
                     createdAt={item.createdAt}
-                    type={item.type}
+                    id={item.id}
                     size={item.size}
+                    title={item.title}
+                    type={item.type}
                   />
                 ))}
           </div>
@@ -394,19 +394,19 @@ function FileBrowser() {
                   })
                   .map(([key, value]) => {
                     return (
-                      <div className="flex flex-col" key={key}>
+                      <div key={key} className="flex flex-col">
                         <h3 className="border-b border-zinc-400 dark:border-secondary text-xl uppercase col-span-full">
                           {key}
                         </h3>
                         <div className="divide-y divide-secondary dark:divide-primary-highlight flex flex-col py-0.5">
                           {value.map((item) => (
                             <FileRow
-                              id={item.id}
                               key={item.id}
-                              title={item.title}
                               createdAt={item.createdAt}
-                              type={item.type}
+                              id={item.id}
                               size={item.size}
+                              title={item.title}
+                              type={item.type}
                             />
                           ))}
                         </div>
@@ -416,11 +416,11 @@ function FileBrowser() {
               : data.map((item) => (
                   <FileRow
                     key={item.id}
-                    id={item.id}
-                    title={item.title}
                     createdAt={item.createdAt}
-                    type={item.type}
+                    id={item.id}
                     size={item.size}
+                    title={item.title}
+                    type={item.type}
                   />
                 ))}
           </div>

@@ -112,7 +112,7 @@ export function Select({
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions(
-    [dismiss, role, listNav, click]
+    [dismiss, role, listNav, click],
   );
 
   const { base, labelClasses, container, optionsContainer } = classes({
@@ -127,13 +127,13 @@ export function Select({
       {title ? <label className={labelClasses()}>{title}</label> : null}
 
       <div
-        className={base()}
         ref={refs.setReference}
+        className={base()}
         {...getReferenceProps()}
         tabIndex={0}
       >
         <span className="font-medium">{selectedLabel || "Select"}</span>
-        <Icon icon={Icons.arrowDown} fontSize={24} color="#a1a1aa" />
+        <Icon color="#a1a1aa" fontSize={24} icon={Icons.arrowDown} />
       </div>
       {isOpen ? (
         <FloatingPortal>
@@ -154,10 +154,10 @@ export function Select({
                   ref={(node) => {
                     listRef.current[i] = node;
                   }}
-                  role="option"
-                  className={`border-t-secondary cursor-pointer overflow-hidden border-t p-2 outline-0 transition-colors first:rounded-t-md first:border-t-0 last:rounded-b-md ${i === activeIndex || item?.value === value ? "bg-info-highlight/20 dark:bg-info-highlight text-info dark:text-white" : "text-black dark:text-white"}`}
-                  tabIndex={i === activeIndex ? 0 : -1}
                   aria-selected={value === item?.value && i === activeIndex}
+                  className={`border-t-secondary cursor-pointer overflow-hidden border-t p-2 outline-0 transition-colors first:rounded-t-md first:border-t-0 last:rounded-b-md ${i === activeIndex || item?.value === value ? "bg-info-highlight/20 dark:bg-info-highlight text-info dark:text-white" : "text-black dark:text-white"}`}
+                  role="option"
+                  tabIndex={i === activeIndex ? 0 : -1}
                   {...getItemProps({
                     // Handle pointer select.
                     onClick(e) {

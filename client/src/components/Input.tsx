@@ -117,18 +117,20 @@ export function Input({
       <div className={base()}>
         {type === "search" ? (
           <Icon
-            fontSize={20}
             className="ml-2 text-zinc-400"
+            fontSize={20}
             icon={Icons.search}
           />
         ) : null}
         <input
           ref={ref}
-          multiple={isMultiple}
           accept={accept}
-          onKeyDown={onKeyDown}
-          name={name}
           autoFocus={isAutofocused}
+          className={inputClasses()}
+          max={max}
+          min={min}
+          multiple={isMultiple}
+          name={name}
           onChange={(e) =>
             onChange({
               name: e?.currentTarget?.name,
@@ -138,11 +140,9 @@ export function Input({
                 type === "number" ? e.currentTarget.valueAsNumber : 0,
             })
           }
-          className={inputClasses()}
+          onKeyDown={onKeyDown}
           placeholder={placeholder}
           type={type}
-          min={min}
-          max={max}
           value={type === "file" ? undefined : value || ""}
         />
         {suffix ? <span className="mr-2 text-zinc-600">{suffix}</span> : null}

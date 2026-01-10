@@ -39,11 +39,11 @@ export async function authFetchFunction<T>({
         headers:
           typeof body === "string"
             ? {
-              ...(headers || {}),
-              "Content-Type": "application/json",
-            }
+                ...(headers || {}),
+                "Content-Type": "application/json",
+              }
             : headers,
-      }
+      },
     );
     return await res.json();
   } catch (error) {
@@ -73,11 +73,11 @@ export async function fetchFunction<T>({
       headers:
         typeof body === "string"
           ? {
-            ...(headers || {}),
-            "Content-Type": "application/json",
-          }
+              ...(headers || {}),
+              "Content-Type": "application/json",
+            }
           : headers,
-    }
+    },
   );
 
   return await res.json();
@@ -88,7 +88,7 @@ export async function fetchEnumFunction<T>({ model }: Pick<Props, "model">) {
     `${import.meta.env.VITE_SERVER_URL}/api/v1/enums/${model}`,
     {
       credentials: "include",
-    }
+    },
   );
 
   return await res.json();
@@ -104,7 +104,7 @@ export async function fileFetchFunction({
       method: "GET",
       credentials: "include",
       searchParams,
-    }
+    },
   );
 
   return await res.blob();

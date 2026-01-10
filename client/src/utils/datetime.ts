@@ -4,7 +4,7 @@ export function formatDateTime(value: string) {
     const parsed = parseISO(value.replace(/\[.*\]$/, ""));
     return formatFn(
       parsed,
-      import.meta.env.VITE_DEFAULT_DATE_TIME_FORMAT || "dd/MM/yyyy HH:mm"
+      import.meta.env.VITE_DEFAULT_DATE_TIME_FORMAT || "dd/MM/yyyy HH:mm",
     );
   } catch (error) {
     console.error(error);

@@ -190,25 +190,25 @@ export function Button({
   });
   return (
     <button
+      className={base()}
       disabled={isDisabled}
       onClick={onClick}
       title={title || ""}
-      className={base()}
     >
       {icon && iconPosition === "left" ? (
         <Icon
-          icon={isLoading ? Icons.loading : icon}
-          fontSize={iconSize}
           className={iconClasses()}
+          fontSize={iconSize}
+          icon={isLoading ? Icons.loading : icon}
         />
       ) : null}
 
       {title ? title : null}
       {icon && iconPosition === "right" ? (
         <Icon
-          icon={isLoading ? Icons.loading : icon}
-          fontSize={iconSize}
           className={iconClasses()}
+          fontSize={iconSize}
+          icon={isLoading ? Icons.loading : icon}
         />
       ) : null}
     </button>

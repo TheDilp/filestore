@@ -12,7 +12,7 @@ async function uploadFiles(
   },
   ctx: {
     meta: UseMutationOptions["meta"];
-  }
+  },
 ) {
   if (!files) return;
   const formData = new FormData();

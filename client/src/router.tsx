@@ -112,7 +112,7 @@ const browserRoute = createRoute({
   getParentRoute: () => indexRoute,
   path: "/{-$path}",
 }).lazy(() =>
-  import("./pages/FileBrowser").then((d) => d.fileBrowserLazyRoute)
+  import("./pages/FileBrowser").then((d) => d.fileBrowserLazyRoute),
 );
 
 const routeTree = rootRoute.addChildren([

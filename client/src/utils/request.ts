@@ -24,7 +24,7 @@ export function getSearchParams<F>({
     "fields",
     (fields || [])
       .map((f) => (typeof f === "string" ? snakecase(f) : f))
-      .join(",")
+      .join(","),
   );
   if (filters) searchParams.append("filters", JSON.stringify(filters));
 
@@ -39,12 +39,12 @@ export function getSearchParams<F>({
     if (sortFieldComponents.length === 2)
       searchParams.append(
         "sortField",
-        `${sortFieldComponents[0]}.${snakecase(String(sortFieldComponents[1]))}`
+        `${sortFieldComponents[0]}.${snakecase(String(sortFieldComponents[1]))}`,
       );
     else
       searchParams.append(
         "sortField",
-        snakecase(String(sortFieldComponents[0]))
+        snakecase(String(sortFieldComponents[0])),
       );
 
     searchParams.append("sortType", snakecase(sort.type));

@@ -63,19 +63,19 @@ export function Drawer() {
     >
       <div
         ref={refs.setFloating}
-        style={{ ...styles, transitionDuration: "0.35s" }}
         className="h-screen w-[calc(50vw)]  max-lg:w-screen max-h-screen right-0 absolute pointer-events-auto rounded-l bg-white dark:bg-primary-darkened shadow"
+        style={{ ...styles, transitionDuration: "0.35s" }}
       >
         <h2 className="text-3xl bg-white dark:bg-primary-darkened dark:text-white px-4 py-2 font-semibold border-b border-primary-highlight flex items-center justify-between">
           {drawer?.title}
           <div>
             <Button
-              size="lg"
-              iconSize={28}
-              onClick={resetDrawer}
-              icon={Icons.close}
-              isOutline
               hasNoBorder
+              icon={Icons.close}
+              iconSize={28}
+              isOutline
+              onClick={resetDrawer}
+              size="lg"
             />
           </div>
         </h2>
@@ -83,8 +83,8 @@ export function Drawer() {
           {drawer?.type === "pdf" ? (
             <iframe
               className="w-full h-full"
-              title={drawer.title}
               src={drawer.data.url}
+              title={drawer.title}
             />
           ) : null}
           {data && drawer?.type && isCode(drawer?.type) ? (

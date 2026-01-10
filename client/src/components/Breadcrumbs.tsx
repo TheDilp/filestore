@@ -13,8 +13,8 @@ export function Breadcrumbs({ items = [] }: Props) {
         <li className="text-primary items-center flex gap-x-1">
           <Link
             className="text-primary items-center flex gap-x-1 dark:text-white"
-            to="/browser/{-$path}"
             params={{ path: "" }}
+            to="/browser/{-$path}"
           >
             <span
               className={`${items.length > 0 ? "text-info-highlight" : ""}`}
@@ -32,13 +32,13 @@ export function Breadcrumbs({ items = [] }: Props) {
           <li key={item.id} className="">
             <Link
               className="flex items-center gap-x-1"
-              to="/browser/{-$path}"
               params={{
                 path: items
                   .slice(0, idx + 1)
                   .map((item) => item.path)
                   .join("/"),
               }}
+              to="/browser/{-$path}"
             >
               <span
                 className={`${idx < items.length - 1 ? "text-info-highlight" : "text-primary dark:text-white"}`}

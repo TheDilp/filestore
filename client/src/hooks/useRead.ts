@@ -21,7 +21,7 @@ export function useRead<F, O = F>(
   options?: Pick<
     UseQueryOptions<F, Error, O>,
     "enabled" | "staleTime" | "select"
-  > & { urlPrefix?: string; urlSuffix?: string }
+  > & { urlPrefix?: string; urlSuffix?: string },
 ) {
   const searchParams = getSearchParams<F>({ fields, relations });
 
@@ -29,7 +29,7 @@ export function useRead<F, O = F>(
     queryKey:
       queryKey ||
       [model, "read", id, fields, relations, options?.urlSuffix || ""].filter(
-        Boolean
+        Boolean,
       ),
     queryFn: async () => {
       const res = await fetchFunction<F>({

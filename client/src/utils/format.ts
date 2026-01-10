@@ -146,7 +146,7 @@ export function variantToHex(variant: Variant): string {
 
 export function groupBy<T, K extends keyof T>(
   items: T[],
-  field: K
+  field: K,
 ): Record<string, T[]> {
   return items.reduce<Record<string, T[]>>(
     (prev, curr) => {
@@ -157,6 +157,6 @@ export function groupBy<T, K extends keyof T>(
 
       return prev;
     },
-    {} as Record<string, T[]>
+    {} as Record<string, T[]>,
   );
 }

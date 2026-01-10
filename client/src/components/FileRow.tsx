@@ -41,15 +41,15 @@ export function FileRow({ id, title, type, createdAt, size }: Props) {
   return (
     <Link
       disabled={type !== "folder"}
-      to="/browser/{-$path}"
       params={{ path: `${params.path ? `${params.path}/` : ""}${title}` }}
+      to="/browser/{-$path}"
     >
       <div
         className={`pl-2 pr-0 py-4 hover:bg-secondary-highlight dark:hover:bg-primary flex flex-col items-center group ${preview ? "h-fit" : "h-12"}`}
       >
         <div className="flex items-center h-full flex-nowrap gap-x-4 w-full">
           <div>
-            <Icon icon={Icons[type]} color={getIconColor(type)} fontSize={22} />
+            <Icon color={getIconColor(type)} fontSize={22} icon={Icons[type]} />
           </div>
           <span>{title}</span>
           <span className="ml-auto text-sm text-primary-highlight font-light flex items-center gap-x-4 dark:text-white">
@@ -58,7 +58,11 @@ export function FileRow({ id, title, type, createdAt, size }: Props) {
             <div className="flex items-center gap-x-4 w-0 group-hover:w-32 transition-(--fade-in-transition)">
               <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto delay-100 group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
                 <Button
+                  hasNoBorder
+                  icon={Icons.preview}
+                  iconSize={20}
                   isDisabled={!isPreviewable(type)}
+                  isOutline
                   onClick={async (e) => {
                     e.preventDefault();
                     if (
@@ -98,15 +102,14 @@ export function FileRow({ id, title, type, createdAt, size }: Props) {
                       setPreview(res.data);
                     }
                   }}
-                  iconSize={20}
-                  hasNoBorder
-                  isOutline
-                  icon={Icons.preview}
                 />
               </div>
               <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-none max-lg:pointer-events-auto delay-100 group-hover:pointer-events-auto opacity-0 w-0 transition-(--fade-in-transition) duration-200">
                 <Button
+                  hasNoBorder
+                  icon={Icons.copy}
                   iconSize={20}
+                  isOutline
                   onClick={async (e) => {
                     e.preventDefault();
                     const res = await fetchFunction<string>({
@@ -124,9 +127,6 @@ export function FileRow({ id, title, type, createdAt, size }: Props) {
                       icon: Icons.copy,
                     });
                   }}
-                  hasNoBorder
-                  isOutline
-                  icon={Icons.copy}
                 />
               </div>
               <div className="group-hover:w-8 group-hover:opacity-100 max-lg:opacity-100 max-lg:w-8 pointer-events-auto opacity-0 w-0 delay-100 transition-(--fade-in-transition) duration-100">
@@ -176,10 +176,10 @@ export function FileRow({ id, title, type, createdAt, size }: Props) {
                   ]}
                 >
                   <Button
-                    onClick={(e) => e.preventDefault()}
                     hasNoBorder
-                    isOutline
                     icon={Icons.menu}
+                    isOutline
+                    onClick={(e) => e.preventDefault()}
                   />
                 </Dropdown>
               </div>
@@ -192,9 +192,9 @@ export function FileRow({ id, title, type, createdAt, size }: Props) {
         >
           {isImage(type) && preview ? (
             <img
+              alt={title}
               className={`object-contain w-full h-full ${preview ? "opacity-100" : "opacity-0"}`}
               src={preview}
-              alt={title}
             />
           ) : null}
           {isAudio(type) && preview ? (

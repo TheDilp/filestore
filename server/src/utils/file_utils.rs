@@ -1,5 +1,8 @@
+use std::io::{BufReader, Read};
+
 use aws_sdk_s3::primitives::ByteStream;
 use axum::extract::multipart::Field;
+use blake3::{Hash, Hasher};
 
 use crate::{
     enums::{errors::AppError, file_enums::FileTypes},
@@ -12,7 +15,7 @@ pub async fn upload_file(
     title: &String,
     file_path: &String,
     is_public: &bool,
-) -> Result<(FileTypes, i64), bool> {
+) -> Result<(FileTypes, i64, Hash), bool> {
     let mut size: i64 = 0;
     let mut data = Vec::new();
     let mut stream = field;
@@ -39,6 +42,19 @@ pub async fn upload_file(
 
     let content_type = content_type.unwrap().to_string();
     let body = ByteStream::from(data);
+    let bytes = body.bytes().unwrap_or_default();
+    let mut reader = BufReader::new(bytes);
+    let mut hasher = Hasher::new();
+    let mut buffer = [0u8; 128 * 1024];
+
+    while let Ok(read) = reader.read(&mut buffer) {
+        if read == 0 {
+            break;
+        }
+        hasher.update(&buffer[..read]);
+    }
+
+    let final_hash = hasher.finalize();
 
     let upload = state
         .s3_client
@@ -55,7 +71,11 @@ pub async fn upload_file(
         .await;
 
     if upload.is_ok() {
-        Ok((FileTypes::from_mime(content_type.as_str()), size))
+        Ok((
+            FileTypes::from_mime(content_type.as_str()),
+            size,
+            final_hash,
+        ))
     } else {
         tracing::error!("ERROR UPLOADING FILE - {}", upload.err().unwrap());
         Err(false)

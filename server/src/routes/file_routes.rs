@@ -83,8 +83,8 @@ async fn upload_file_route(
 
     let statement = tx
         .prepare(
-            "INSERT INTO files (id, title, owner_id, size, type, path, is_public)
-        VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (path, title, owner_id) DO NOTHING;",
+            "INSERT INTO files (id, title, owner_id, size, type, path, is_public, hash)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (path, title, owner_id) DO NOTHING;",
         )
         .await
         .map_err(|err| AppError::db_error(err))?;
@@ -162,7 +162,7 @@ async fn upload_file_route(
         debug!("BEGIN FILE UPLOAD");
         let upload_result = upload_file(&state, field, &title, &file_path, &query.is_public).await;
         debug!("END FILE UPLOAD");
-        if let Ok((file_type, size)) = upload_result {
+        if let Ok((file_type, size, hash)) = upload_result {
             //TODO: Optimize by using batch insert
             let db_result = tx
                 .execute(
@@ -175,6 +175,7 @@ async fn upload_file_route(
                         &file_type.to_string(),
                         &query.path,
                         &query.is_public,
+                        &hash.to_string(),
                     ],
                 )
                 .await;

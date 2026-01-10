@@ -22,10 +22,14 @@ use reqwest::{
 use tokio_postgres::NoTls;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt};
+use uuid::Uuid;
 
 use crate::{
+    enums::errors::AppError,
+    enums::file_enums::FileTypes,
     enums::server_enums::Environment,
     middleware::session_middleware::session_middleware,
+    models::response::AppErrorResponse,
     models::state::AppState,
     routes::{auth_routes::auth_routes, file_routes::file_routes},
     utils::db_utils::db_init_setup,
@@ -37,6 +41,175 @@ mod models;
 mod routes;
 mod traits;
 mod utils;
+
+async fn import_s3_objects_to_db(
+    state: &AppState,
+    owner_id: Uuid,
+    prefix: Option<&str>,
+) -> Result<usize, AppErrorResponse> {
+    let conn = state.get_db_conn().await?;
+    let statement = conn
+        .prepare(
+            "INSERT INTO files (title, owner_id, size, type, path, is_public)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            ON CONFLICT (path, title, owner_id) DO NOTHING;",
+        )
+        .await
+        .map_err(|err| AppError::db_error(err))?;
+
+    let normalized_prefix = prefix
+        .map(|value| value.trim_matches('/').to_string())
+        .filter(|value| !value.is_empty());
+    let list_prefix = normalized_prefix
+        .as_ref()
+        .map(|value| format!("{}/", value));
+    let mut continuation_token: Option<String> = None;
+    let mut inserted = 0usize;
+
+    loop {
+        let mut request = state.s3_client.list_objects_v2().bucket(&state.s3_name);
+        if let Some(value) = list_prefix.as_ref() {
+            request = request.prefix(value);
+        }
+        if let Some(token) = continuation_token.as_ref() {
+            request = request.continuation_token(token);
+        }
+
+        let response = request
+            .send()
+            .await
+            .map_err(|err| AppError::s3_error(err))?;
+
+        for object in response.contents() {
+            let Some(full_key) = object.key() else {
+                continue;
+            };
+            if full_key.ends_with('/') {
+                continue;
+            }
+
+            let head = state
+                .s3_client
+                .head_object()
+                .bucket(&state.s3_name)
+                .key(full_key)
+                .send()
+                .await
+                .map_err(|err| AppError::s3_error(err))?;
+
+            let key = match list_prefix.as_ref() {
+                Some(value) => full_key.strip_prefix(value).unwrap_or(full_key),
+                None => full_key,
+            };
+            let (path, title) = split_key(key);
+            if title.is_empty() {
+                continue;
+            }
+
+            let size = object.size().unwrap_or(0);
+            let file_type = infer_file_type(&title, head.content_type());
+
+            let rows = conn
+                .execute(
+                    &statement,
+                    &[&title, &owner_id, &size, &file_type, &path, &false],
+                )
+                .await
+                .map_err(|err| AppError::db_error(err))?;
+            inserted += rows as usize;
+        }
+        if response.is_truncated().unwrap_or(false) {
+            continuation_token = response
+                .next_continuation_token()
+                .map(|value| value.to_string());
+            if continuation_token.is_none() {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+
+    Ok(inserted)
+}
+
+fn split_key(key: &str) -> (String, String) {
+    match key.rfind('/') {
+        Some(idx) => (key[..idx].to_string(), key[idx + 1..].to_string()),
+        None => (String::from(""), key.to_string()),
+    }
+}
+
+fn infer_file_type(title: &str, content_type: Option<&str>) -> String {
+    if let Some(value) = content_type.filter(|value| !value.is_empty()) {
+        return FileTypes::from_mime(value).to_string();
+    }
+
+    if let Some(ext) = title.rsplit('.').next()
+        && ext != title
+    {
+        let ext = ext.to_lowercase();
+        return FileTypes::from_str(&ext)
+            .unwrap_or(FileTypes::Other(ext))
+            .to_string();
+    }
+
+    FileTypes::Other(String::from("other")).to_string()
+}
+
+async fn create_folders_from_paths(
+    state: &AppState,
+    owner_id: Uuid,
+    is_public: bool,
+) -> Result<usize, AppErrorResponse> {
+    let conn = state.get_db_conn().await?;
+    let rows = conn
+        .query(
+            "SELECT DISTINCT path FROM files
+            WHERE owner_id = $1 AND path IS NOT NULL AND path <> '';",
+            &[&owner_id],
+        )
+        .await
+        .map_err(|err| AppError::db_error(err))?;
+
+    let statement = conn
+        .prepare(
+            "INSERT INTO files (id, title, owner_id, size, type, path, is_public)
+            VALUES ($1, $2, $3, 0, 'folder', $4, $5)
+            ON CONFLICT (path, title, owner_id) DO NOTHING;",
+        )
+        .await
+        .map_err(|err| AppError::db_error(err))?;
+
+    let mut inserted = 0usize;
+
+    for row in rows {
+        let path: String = row.get("path");
+        let mut parent = String::from("");
+        for segment in path.split('/').filter(|value| !value.is_empty()) {
+            let folder_path = parent.clone();
+            let title = segment.to_string();
+
+            let row_count = conn
+                .execute(
+                    &statement,
+                    &[&Uuid::new_v4(), &title, &owner_id, &folder_path, &is_public],
+                )
+                .await
+                .map_err(|err| AppError::db_error(err))?;
+            inserted += row_count as usize;
+
+            parent = if parent.is_empty() {
+                title
+            } else {
+                format!("{}/{}", parent, title)
+            };
+        }
+    }
+
+    Ok(inserted)
+}
+
 #[tokio::main]
 async fn main() {
     //* ENV vars

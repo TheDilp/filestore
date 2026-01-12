@@ -1,4 +1,4 @@
-\restrict PmTUMo0z7m1KN8ZYM4DS7nCfWsuY0g29HxkaxDOEC2lWLwx8yWXQ0HQqtt0UXcZ
+\restrict NlgTvfFd1qrFR16VJ9kj86e00ATzyJvL3L2SAaMrCO9kbG3XnkhJRspVe8XMkc4
 
 -- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
 -- Dumped by pg_dump version 18.1
@@ -34,6 +34,19 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: buckets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.buckets (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    title text NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    owner_id uuid NOT NULL
+);
+
+
+--
 -- Name: files; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -47,7 +60,9 @@ CREATE TABLE public.files (
     type text NOT NULL,
     size bigint DEFAULT 0 NOT NULL,
     path text NOT NULL,
-    hash text
+    hash text,
+    bucket_id uuid NOT NULL,
+    etag text
 );
 
 
@@ -84,6 +99,14 @@ CREATE TABLE public.users (
     email text NOT NULL,
     pw_hsh text NOT NULL
 );
+
+
+--
+-- Name: buckets buckets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.buckets
+    ADD CONSTRAINT buckets_pkey PRIMARY KEY (id);
 
 
 --
@@ -158,6 +181,22 @@ CREATE INDEX files_title_trgm_index ON public.files USING gin (title public.gin_
 
 
 --
+-- Name: buckets buckets_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.buckets
+    ADD CONSTRAINT buckets_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: files files_bucket_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.files
+    ADD CONSTRAINT files_bucket_id_fkey FOREIGN KEY (bucket_id) REFERENCES public.buckets(id) ON DELETE CASCADE;
+
+
+--
 -- Name: files files_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -177,7 +216,7 @@ ALTER TABLE ONLY public.tags
 -- PostgreSQL database dump complete
 --
 
-\unrestrict PmTUMo0z7m1KN8ZYM4DS7nCfWsuY0g29HxkaxDOEC2lWLwx8yWXQ0HQqtt0UXcZ
+\unrestrict NlgTvfFd1qrFR16VJ9kj86e00ATzyJvL3L2SAaMrCO9kbG3XnkhJRspVe8XMkc4
 
 
 --
@@ -191,4 +230,7 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20251129111547'),
     ('20251129112013'),
     ('20251130085721'),
-    ('20260110103844');
+    ('20260110103844'),
+    ('20260112075724'),
+    ('20260112080233'),
+    ('20260112080337');

@@ -1,0 +1,7 @@
+-- migrate:up
+ALTER TABLE IF EXISTS files
+ADD COLUMN IF NOT EXISTS bucket_id UUID NOT NULL REFERENCES buckets (id) ON DELETE CASCADE;
+
+-- migrate:down
+ALTER TABLE IF EXISTS files
+DROP COLUMN IF EXISTS bucket_id;

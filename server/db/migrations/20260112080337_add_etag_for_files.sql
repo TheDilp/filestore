@@ -1,0 +1,7 @@
+-- migrate:up
+ALTER TABLE IF EXISTS files
+ADD COLUMN IF NOT EXISTS etag TEXT;
+
+-- migrate:down
+ALTER TABLE IF EXISTS files
+DROP COLUMN IF EXISTS etag;

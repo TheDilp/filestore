@@ -1,4 +1,4 @@
-import { object, string, uuidv4, type infer as zodInfer } from "zod";
+import { type infer as zodInfer, object, string, uuidv4 } from "zod";
 
 export const BucketSchema = object({
   id: uuidv4(),

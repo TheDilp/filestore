@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+
 import { Icons } from "../enums";
 import { fetchFunction } from "../utils";
 import { Button } from "./Button";

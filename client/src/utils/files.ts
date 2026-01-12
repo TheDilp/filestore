@@ -1,6 +1,6 @@
 const imageTypes = new Set(["png", "jpg", "jpeg", "webp", "gif", "svg"]);
 
-const audioTypes = new Set(["mp3", "wav", "ogg", "aac", "m4p"]);
+const audioTypes = new Set(["mp3", "wav", "ogg", "aac", "m4p", "opus", "flac"]);
 
 const videoTypes = new Set(["mp4", "webm", "ogg", "mov", "avi"]);
 
@@ -32,6 +32,8 @@ const previewableTypes = new Set([
   "jpg",
   "jpeg",
   "webp",
+  "opus",
+  "flac",
   "gif",
   "svg",
   "mp3",

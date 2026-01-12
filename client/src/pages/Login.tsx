@@ -22,12 +22,8 @@ export function Login() {
     },
     validators: {
       onSubmit: object({
-        username: string().min(8, {
-          error: "Username must be at least 8 characters.",
-        }),
-        password: string().min(12, {
-          error: "Password must be at least 12 characters.",
-        }),
+        username: string(),
+        password: string(),
       }),
     },
     onSubmit: async (data) => {

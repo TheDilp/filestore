@@ -13,7 +13,6 @@ import {
 import { Icons } from "../enums";
 import {
   useCreateNotification,
-  useDarkMode,
   useDebounce,
   useList,
   useUpload,
@@ -69,6 +68,7 @@ export function FileBrowser() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search);
   const createNotification = useCreateNotification();
+
   const [groupedBy, setGroupedBy] = useState<"type" | null>(null);
   const ref = useRef<HTMLInputElement>(null);
   const params = useParams({ from: "/browser/{-$path}" });
@@ -100,7 +100,7 @@ export function FileBrowser() {
     },
     {
       searchParams: [["path", params?.path || ""]],
-    },
+    }
   );
 
   const { mutate, isPending } = useUpload();
@@ -108,22 +108,9 @@ export function FileBrowser() {
     .split("/")
     .filter(Boolean)
     .map((crumb) => ({ id: crumb, title: crumb, path: crumb }));
-  const { mode, changeMode } = useDarkMode();
   const grouped = groupedBy ? groupBy(data, groupedBy) : null;
   return (
     <div className="w-full mx-auto h-full flex flex-col gap-y-4 overflow-hidden">
-      <div className="w-full h-14 flex items-center relative justify-center">
-        <h1 className="text-3xl font-bold absolute">Filestore</h1>
-        <div className="ml-auto right-0.5 relative">
-          <Button
-            hasNoBorder
-            icon={mode === "dark" ? Icons.moon : Icons.sun}
-            iconSize={28}
-            isOutline
-            onClick={() => changeMode(mode === "dark" ? "light" : "dark")}
-          />
-        </div>
-      </div>
       <div className="w-full px-6 flex flex-col gap-y-10 mx-auto flex-1 max-h-[calc(100%-120px)]">
         <div className="rounded-md border border-secondary w-full p-4 flex flex-col gap-y-2">
           <div className="flex flex-nowrap items-center gap-x-2">
@@ -145,8 +132,8 @@ export function FileBrowser() {
                           name: file.name,
                           file,
                           tags: [],
-                        })),
-                      ),
+                        }))
+                      )
                     );
                     if (ref.current) ref.current.value = "";
                   }
@@ -178,7 +165,7 @@ export function FileBrowser() {
                           });
                         }
                       },
-                    },
+                    }
                   )
                 }
                 title="Upload"

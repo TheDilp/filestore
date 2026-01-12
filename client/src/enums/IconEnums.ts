@@ -10,6 +10,7 @@ export const Icons = {
   arrowUpSort: "mdi:arrow-up" as const,
   arrowDownSort: "mdi:arrow-down" as const,
   bmp: "bi:filetype-bmp" as const,
+  bucket: "hugeicons:bucket" as const,
   close: "material-symbols:close-rounded" as const,
   cs: "bi:filetype-cs" as const,
   css: "bi:filetype-css" as const,

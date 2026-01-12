@@ -1,1 +1,1 @@
-export const Models = ["files"] as const;
+export const Models = ["files", "buckets"] as const;

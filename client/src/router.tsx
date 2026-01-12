@@ -58,13 +58,8 @@ const rootRoute = createRootRoute({
       (ctx.location.pathname.endsWith("/auth/login") ||
         ctx.location.href === "/")
     )
-      throw redirect({ to: "/browser/{-$path}" });
+      throw redirect({ to: "/buckets" });
   },
-  component: () => <Outlet />,
-});
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/browser",
   component: () => (
     <QueryClientProvider client={queryClient}>
       <MainLayout>
@@ -108,13 +103,19 @@ const loginRoute = createRoute({
   },
 }).lazy(() => import("./pages").then((d) => d.loginLazyRoute));
 
-const browserRoute = createRoute({
-  getParentRoute: () => indexRoute,
-  path: "/{-$path}",
+const fileBrowserRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/browser/{-$path}",
 }).lazy(() => import("./pages").then((d) => d.fileBrowserLazyRoute));
 
+const bucketBrowserRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/buckets",
+}).lazy(() => import("./pages").then((d) => d.bucketBrowserLazyRoute));
+
 const routeTree = rootRoute.addChildren([
-  indexRoute.addChildren([browserRoute]),
+  bucketBrowserRoute,
+  fileBrowserRoute,
   authRoute.addChildren([registerRoute, loginRoute]),
 ]);
 

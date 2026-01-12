@@ -25,13 +25,10 @@ use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberI
 use uuid::Uuid;
 
 use crate::{
-    enums::errors::AppError,
-    enums::file_enums::FileTypes,
-    enums::server_enums::Environment,
+    enums::{errors::AppError, file_enums::FileTypes, server_enums::Environment},
     middleware::session_middleware::session_middleware,
-    models::response::AppErrorResponse,
-    models::state::AppState,
-    routes::{auth_routes::auth_routes, file_routes::file_routes},
+    models::{response::AppErrorResponse, state::AppState},
+    routes::{auth_routes::auth_routes, bucket_routes::bucket_routes, file_routes::file_routes},
     utils::db_utils::db_init_setup,
 };
 mod consts;
@@ -272,8 +269,6 @@ async fn main() {
 
     //* Server Config
 
-    // Server setup
-
     let mut cors = CorsLayer::new()
         .allow_credentials(true)
         .allow_headers([
@@ -334,6 +329,7 @@ async fn main() {
     let _ = db_init_setup(&state).await;
 
     let base_router = Router::new()
+        .merge(bucket_routes())
         .merge(file_routes())
         .layer(from_fn_with_state(state.clone(), session_middleware));
 

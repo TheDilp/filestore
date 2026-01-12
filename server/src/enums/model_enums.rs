@@ -3,4 +3,5 @@
 pub enum Models {
     Users,
     Files,
+    Buckets,
 }
